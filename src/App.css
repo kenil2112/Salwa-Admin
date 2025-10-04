@@ -3636,3 +3636,474 @@ ul.pl-20 {
 }
 
 /* -- custom End -- */
+
+@font-face {
+  font-family: "HelveticaNowDisplay-Medium";
+  src: url("../public/fonts/HelveticaNowDisplay-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "HelveticaNowDisplay-Bold";
+  src: url("../public/fonts/HelveticaNowDisplay-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "HelveticaNowText-Bold";
+  src: url("../public/fonts/HelveticaNowText-Bold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "HelveticaNowText-ExtraBold";
+  src: url("../public/fonts/HelveticaNowText-ExtraBold.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "HelveticaNowText-Regular";
+  src: url("../public/fonts/HelveticaNowText-Regular.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "HelveticaNowText-Medium";
+  src: url("../public/fonts/HelveticaNowText-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "Rubik-Light";
+  src: url("../public/fonts/Rubik-Light.otf") format("opentype");
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card-box {
+    @apply border border-gray-200 rounded-[32px] p-6 cursor-pointer transition-all duration-200 bg-white w-[300px] h-[300px] flex flex-col justify-center items-center text-center;
+  }
+
+  .card-box:hover {
+    @apply border-[#00B4FA] border-6;
+    border-width: 6px;
+  }
+
+  .card-box-active {
+    @apply border-[#00B4FA];
+    border-width: 6px;
+  }
+
+  .card-box .card-subtext {
+    @apply text-[17px] text-gray-500 font-helveticaMedium mt-2 opacity-0 transition-opacity duration-200;
+    opacity: 0px;
+  }
+
+  .card-box:hover .card-subtext,
+  .card-box-active .card-subtext {
+    @apply opacity-100;
+  }
+
+  .step-circle {
+    @apply w-8 h-8 flex items-center justify-center rounded-full border-2 border-gray-300 text-gray-400 transition-all duration-300;
+  }
+
+  .step-active {
+    @apply bg-[#00B4FA] text-white border-[#00B4FA];
+  }
+}
+
+@keyframes pppopen {
+  0% {
+    transform: scale(0.4);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.salva-sidebar-navmenu-main ul {
+  scrollbar-color: #ffffff #15159b;
+}
+
+.add-new-vehicle-popup-inside-main-contant {
+  scrollbar-color: #15159b #ffffff;
+  padding-right: 20px;
+}
+
+/* ==== dark mode start ==== */
+
+.salva-main-desh.darkmode {
+  background-color: #0f0f0f;
+
+  .salva-sidebar-left-main {
+    background-color: #222222;
+  }
+
+  .salva-sidebar-head-logo {
+    background-color: #1c1c1c;
+  }
+
+  .salva-sidebar-button-main a {
+    background-color: #1c1c1c;
+  }
+
+  .salva-sidebar-button-main a:hover {
+    background-color: #0f0f0f;
+  }
+
+  .salva-sidebar-button-main a:hover span {
+    color: white;
+  }
+
+  .salva-sidebar-button-main a img {
+    transition: 0.05s;
+  }
+
+  .salva-sidebar-button-main a:hover img {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7481%)
+      hue-rotate(355deg) brightness(111%) contrast(104%);
+  }
+
+  .genral-information-pg-main a,
+  .genral-information-pg-main h2,
+  .space-y-4.w-full.mx-auto span {
+    color: #f5f5f5;
+  }
+
+  .dpdn-ngt-mode {
+    background-color: #222222;
+
+    span {
+      color: #f5f5f5;
+    }
+
+    ul li {
+      color: white;
+    }
+  }
+
+  .itp-and-dpdn input,
+  .itp-and-dpdn button {
+    background-color: #222222;
+    border-color: #222222;
+  }
+
+  .genral-information-pg-main textarea {
+    background-color: #222222;
+    border-color: #222222;
+  }
+
+  .upload-img-main,
+  .ifrm-map .w-full {
+    border-color: #222222;
+  }
+
+  .sec-itp-full .upload-img-main .w-full {
+    background-color: #222222;
+  }
+
+  .flex.justify-center button {
+    background-color: #222222;
+    color: white;
+  }
+
+  .flex.justify-center button.bg-primaryBlue {
+    background-color: white;
+    color: black;
+  }
+
+  .service-sidebar-insd-mn {
+    scrollbar-color: white #222222;
+  }
+
+  .salva-right-desh-head-search-profile-and-noti .salva-search-head-main input,
+  .salva-noti-head-main {
+    background-color: #222222;
+  }
+
+  .salva-right-desh-head-search-profile-and-noti .salva-search-head-main a {
+    color: white;
+  }
+
+  .salva-noti-head-main a {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7481%)
+      hue-rotate(355deg) brightness(111%) contrast(104%);
+  }
+
+  .salva-right-desh-part-main .relative.inline-block button {
+    background-color: #222222;
+    color: white;
+  }
+
+  .salva-sidebar-navmenu-main ul li a:hover {
+    background-color: #0f0f0f;
+  }
+
+  .salva-sidebar-navmenu-main ul li a:hover span {
+    color: white;
+  }
+
+  .salva-sidebar-navmenu-main ul li a img {
+    transition: 0.05s;
+  }
+
+  .salva-sidebar-navmenu-main ul li a:hover img {
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7481%)
+      hue-rotate(355deg) brightness(111%) contrast(104%);
+  }
+
+  input {
+    color: white;
+  }
+
+  .gnrl-info-pg-two a,
+  .gnrl-info-pg-two button {
+    background-color: #222222;
+    border-color: #222222;
+  }
+
+  .chl-insd-snst {
+    background-color: #0f0f0f;
+  }
+
+  .chl-insd-snst .form-crd-chl {
+    background-color: #ffffffd9;
+  }
+
+  .data-tbl-mn-dtbs-pg table thead tr th {
+    color: white;
+  }
+
+  .data-tbl-mn-dtbs-pg .responsive-tabldt {
+    scrollbar-color: white #1c1c1c;
+  }
+
+  .enter-jump-page input,
+  .export-itp-fld input {
+    background-color: #222222;
+    border-color: #222222;
+  }
+
+  .database-tbl-pgntion-pera-pages p,
+  .pgntopn-count button,
+  .enter-jump-page span {
+    color: white;
+  }
+
+  .data-tbl-mn-dtbs-pg table tbody tr.odd {
+    background: #1c1c1c;
+  }
+
+  .data-tbl-mn-dtbs-pg table tbody tr td {
+    color: white;
+  }
+
+  .data-tbl-mn-dtbs-pg table tbody tr.even {
+    background-color: #222222;
+  }
+
+  .export-button-and-search button.bg-primaryBlue {
+    background-color: #222222;
+    color: white;
+  }
+
+  .export-button-and-search button.bg-primaryBlue:hover {
+    background-color: rgb(28, 28, 28);
+  }
+
+  .database-servise-page-chart-and-graph-main .card {
+    background-color: #1c1c1c;
+
+    img {
+      filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(0%)
+        hue-rotate(190deg) brightness(107%) contrast(102%);
+    }
+
+    p {
+      color: white;
+    }
+  }
+
+  .heading-cmpny-pg-hd {
+    background-color: #0f0f0f;
+  }
+
+  .filters-company-pg {
+    background-color: #1c1c1c;
+
+    h2,
+    h3,
+    label,
+    span {
+      color: white;
+    }
+  }
+
+  .cmpny-pg-property button {
+    background-color: #222222;
+    color: white;
+  }
+
+  .cmpny-pg-property button img {
+    filter: brightness(0) saturate(100%) invert(99%) sepia(18%) saturate(119%)
+      hue-rotate(52deg) brightness(116%) contrast(100%);
+  }
+
+  .cmpny-pg-property button:hover {
+    background-color: #0f0f0f;
+  }
+
+  .cmpny-pg-right-search {
+    .cmpny-pg-right-itp {
+      background-color: #222222;
+      border-color: #222222;
+    }
+
+    button {
+      background-color: #222222;
+      border-color: #222222;
+      color: white;
+    }
+
+    select {
+      background-color: #222222;
+      border-color: #222222;
+      color: white;
+      outline: none;
+    }
+  }
+
+  .insurance-crtfct-crd {
+    background-color: #222222;
+
+    h2,
+    p,
+    ul li,
+    h3,
+    .hsptl-pg-dtls-grd {
+      color: white;
+    }
+
+    .details-grid-upgrd-card {
+      color: white;
+    }
+
+    button {
+      background-color: #1c1c1c;
+      color: white;
+    }
+
+    button:hover {
+      background-color: #0f0f0f;
+    }
+  }
+
+  .main-pddtils-pg-drk-md {
+    background-color: #222222;
+  }
+
+  .map-sec-btn-drk-md button {
+    background-color: #1c1c1c;
+  }
+
+  .map-sec-btn-drk-md button:hover {
+    background-color: #0f0f0f;
+  }
+
+  .salva-welcome-heading-main {
+    h1,
+    p,
+    h5 {
+      color: white;
+    }
+  }
+
+  .salva-service-category-main {
+    h1 {
+      color: white;
+    }
+  }
+
+  #upgrade-factors-buttons button {
+    background-color: #222222;
+    color: white;
+  }
+
+  #upgrade-factors-buttons button.active {
+    background-color: white;
+    color: black;
+  }
+
+  .upgrade-fctr-upload-sec-drk-md {
+    background: #222222;
+
+    p {
+      color: white;
+    }
+
+    #dropzone {
+      background-color: #1c1c1c;
+    }
+  }
+
+  .wallet-card-one-outside {
+    .wallet-card-one {
+      background-color: #1c1c1c;
+
+      p,
+      h6 {
+        color: white;
+      }
+
+      img {
+        filter: brightness(0) saturate(100%) invert(99%) sepia(22%)
+          saturate(71%) hue-rotate(268deg) brightness(116%) contrast(100%);
+      }
+    }
+  }
+
+  .graph-chart-main {
+    background-color: #1c1c1c;
+  }
+
+  .chart-graph-main span {
+    color: white;
+  }
+
+  .wallet-right-part-drk-md {
+    background-color: #1c1c1c;
+
+    h6 img,
+    button img {
+      filter: brightness(0) saturate(100%) invert(99%) sepia(22%) saturate(71%)
+        hue-rotate(268deg) brightness(116%) contrast(100%);
+    }
+
+    p,
+    h6 {
+      color: white;
+    }
+
+    .px-8 button {
+      background-color: #222222;
+    }
+
+    .px-8 button:hover {
+      background-color: #0f0f0f;
+    }
+  }
+
+  .recent-transaction-main {
+    background-color: #1c1c1c;
+  }
+
+  .recent-transaction-main table tbody tr:nth-child(odd) {
+    background: #222222;
+  }
+
+  .recent-transaction-main table tbody tr td,
+  .recent-transaction-main table thead tr th {
+    color: #ffffffba;
+  }
+}
+
+/* ==== dark mode End ==== */
