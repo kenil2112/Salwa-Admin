@@ -706,9 +706,8 @@ const Header = () => (
 const TabButton = ({ label, isActive, onClick }: { label: string; isActive: boolean; onClick: () => void }) => (
   <button
     type="button"
-    className={`rounded-full px-5 py-2 ${
-      isActive ? "bg-white text-primary shadow" : "bg-transparent text-gray-500 hover:text-primary"
-    }`}
+    className={`rounded-full px-5 py-2 ${isActive ? "bg-white text-primary shadow" : "bg-transparent text-gray-500 hover:text-primary"
+      }`}
     onClick={onClick}
   >
     {label}
@@ -786,7 +785,6 @@ const FormModal = ({
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <LabeledSelect
-              label="User Type"
               value={values.userTypeId}
               onChange={(event) =>
                 onChange({
@@ -798,34 +796,31 @@ const FormModal = ({
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="Promo Description"
+              placeholder="Promo Description"
               value={values.promoDescription}
               onChange={(event) => onChange({ ...values, promoDescription: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="Start Date"
               type="date"
               value={values.startDate}
               onChange={(event) => onChange({ ...values, startDate: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="End Date"
               type="date"
               value={values.endDate}
               onChange={(event) => onChange({ ...values, endDate: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="Code"
+              placeholder="Code"
               value={values.code}
               onChange={(event) => onChange({ ...values, code: event.target.value })}
               disabled={isSubmitting}
             />
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">VALUE TYPE</p>
-              <div className="flex items-center gap-6 rounded-[20px] border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600">
+              <div className="flex items-center gap-6 rounded-md border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600">
                 <LabelledRadio
                   label="Flat"
                   checked={values.discountType === "Flat"}
@@ -841,31 +836,31 @@ const FormModal = ({
               </div>
             </div>
             <LabeledInput
-              label={values.discountType === "Flat" ? "Discount Value" : "Discount Percentage"}
+              placeholder={values.discountType === "Flat" ? "Discount Value" : "Discount Percentage"}
               value={values.discountValue}
               onChange={(event) => onChange({ ...values, discountValue: event.target.value })}
               rightAdornment={values.discountType === "Flat" ? <CurrencyIcon /> : <PercentageIcon />}
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="Maximum Discount Cap Value"
+              placeholder="Maximum Discount Cap Value"
               value={values.maxDiscount}
               onChange={(event) => onChange({ ...values, maxDiscount: event.target.value })}
               rightAdornment={<CurrencyIcon />}
               disabled={isSubmitting}
             />
             <LabeledInput
-              label="Minimum Purchase Value"
+              placeholder="Minimum Purchase Value"
               value={values.minPurchase}
               onChange={(event) => onChange({ ...values, minPurchase: event.target.value })}
               rightAdornment={<CurrencyIcon />}
               disabled={isSubmitting}
             />
           </div>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-center gap-3 pt-2">
             <button
               type="button"
-              className="rounded-full border border-gray-300 px-6 py-2 text-sm font-semibold text-gray-500 hover:border-primary"
+              className="rounded-md border border-gray-300 px-6 py-2 text-sm font-semibold text-gray-500 hover:border-primary"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -873,7 +868,7 @@ const FormModal = ({
             </button>
             <button
               type="submit"
-              className="rounded-full bg-primary px-10 py-3 text-sm font-semibold text-white shadow hover:bg-[#030447] disabled:cursor-not-allowed disabled:bg-primary/70"
+              className="rounded-md bg-primary px-10 py-3 text-sm font-semibold text-white shadow hover:bg-[#030447] disabled:cursor-not-allowed disabled:bg-primary/70"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Saving..." : submitLabel}
@@ -972,26 +967,24 @@ const LabelledRadio = ({ label, checked, onChange, disabled }: { label: string; 
   </label>
 );
 
-const LabeledInput = ({ label, rightAdornment, className = "", ...props }: { label: string; rightAdornment?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) => (
+const LabeledInput = ({ rightAdornment, className = "", ...props }: { rightAdornment?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) => (
   <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    {label}
     <div className="relative">
       <input
         {...props}
-        className={`w-full rounded-[20px] border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
+        className={`w-full rounded-md border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
       />
       {rightAdornment && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">{rightAdornment}</span>}
     </div>
   </label>
 );
 
-const LabeledSelect = ({ label, options, className = "", ...props }: { label: string; options: Array<{ value: number | string; label: string }> } & SelectHTMLAttributes<HTMLSelectElement>) => (
+const LabeledSelect = ({ options, className = "", ...props }: { options: Array<{ value: number | string; label: string }> } & SelectHTMLAttributes<HTMLSelectElement>) => (
   <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    {label}
     <div className="relative">
       <select
         {...props}
-        className={`w-full appearance-none rounded-[20px] border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
+        className={`w-full appearance-none rounded-md border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -1026,19 +1019,19 @@ const ActionButton = ({ label, variant, onClick, children }: { label: string; va
 };
 
 const ModalOverlay = ({ children }: { children: ReactNode }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/55 backdrop-blur-[6px] px-4">
+  <div className="fixed inset-0 z-[9999999] flex items-center justify-center bg-[#1b1787b8] px-4">
     {children}
   </div>
 );
 
 const ModalShell = ({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) => (
-  <div className="w-full max-w-xl rounded-[36px] bg-white px-8 py-10 shadow-[0_40px_90px_rgba(5,6,104,0.18)]">
+  <div className="w-full max-w-xl rounded-[20px] bg-white px-8 py-10 shadow-[0_40px_90px_rgba(5,6,104,0.18)]">
     <div className="flex items-center justify-between gap-4">
       <h3 className="text-xl font-semibold text-primary">{title}</h3>
       <button
         type="button"
         aria-label="Close"
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f7f8fd] text-gray-500 transition hover:bg-primary/10 hover:text-primary"
+        className="flex h-8 w-8 items-center justify-center rounded-full text-[#1B1787] transition"
         onClick={onClose}
       >
         <CloseIcon />
@@ -1048,7 +1041,7 @@ const ModalShell = ({ title, onClose, children }: { title: string; onClose: () =
   </div>
 );
 const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-8 w-8">
     <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
   </svg>
 );
