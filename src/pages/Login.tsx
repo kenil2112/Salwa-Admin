@@ -52,7 +52,6 @@ const Login = () => {
 
   const [step, setStep] = useState<Step>("verifyId");
   const [idNumber, setIdNumber] = useState("");
-  const [verification, setVerification] = useState<VerifyResponse | null>(null);
 
   const [verifyLoading, setVerifyLoading] = useState(false);
   const [mobileLoading, setMobileLoading] = useState(false);
@@ -93,16 +92,7 @@ const Login = () => {
     return Array.from(map.values());
   }, [mobileDialCode]);
 
-  const formatMobileForDisplay = (raw: string) => {
-    if (!raw) {
-      return "";
-    }
-    const digitsOnly = raw.replace(/[^0-9]/g, "");
-    if (!digitsOnly) {
-      return raw;
-    }
-    return `+${digitsOnly}`;
-  };
+
 
   const applyMobileFromVerification = (raw?: string) => {
     if (!raw) {
@@ -300,7 +290,6 @@ const Login = () => {
     setVerifyLoading(true);
     try {
       const data = await verifyIdViaApi(idNumber);
-      setVerification(data);
       applyMobileFromVerification(data.adminMobileNo);
       const readyForLogin = data.isPasswordSet === 1 && data.isOtpVerify === 1 && data.isMobileNoVerify;
 
@@ -436,16 +425,6 @@ const Login = () => {
     setCreatingPassword(true);
     try {
       const message = await setPasswordViaApi(trimmedId, newPassword, confirmPassword);
-      setVerification((current) =>
-        current
-          ? {
-            ...current,
-            isPasswordSet: 1,
-            isOtpVerify: 1,
-            isMobileNoVerify: true,
-          }
-          : current,
-      );
       setLoginPassword(newPassword);
       goToStep("success");
       showToast(message, "success");
