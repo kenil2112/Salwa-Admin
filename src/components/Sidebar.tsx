@@ -10,18 +10,67 @@ interface SidebarProps {
 
 const menuItems = [
   { label: "Analysis", href: "/dashboard", icon: "/theme-icons/analysis.png" },
-  { label: "Services Dashboard", href: "/service-dashboard", icon: "/theme-icons/providers.png" },
+  {
+    label: "Services Dashboard",
+    href: "/service-dashboard",
+    icon: "/theme-icons/providers.png",
+  },
   { label: "Reports", href: "/reports", icon: "/theme-icons/report.png" },
-  { label: "Statement of All Wallet", href: "/statement-analysis", icon: "/theme-icons/wallet.png" },
-  { label: "List of Subscribers", href: "/subscribers", icon: "/theme-icons/subscription-details.png" },
-  { label: "List of Agents", href: "/agents", icon: "/theme-icons/employee-database.png" },
-  { label: "Promocode Settings", href: "/promocode-settings", icon: "/theme-icons/invoice.png" },
-  { label: "Non Medical Companies", href: "/non-medical-companies", icon: "/theme-icons/providers.png" },
-  { label: "Subscription Settings", href: "/subscription-settings", icon: "/theme-icons/subscription-details.png" },
-  { label: "Service Management", href: "/service-management", icon: "/theme-icons/orders-icon.png" },
-  { label: "Supervisor / Employee Management", href: "/supervisor-management", icon: "/theme-icons/messages.png" },
-  { label: "Employee & Category Assignment", href: "/employee-category", icon: "/theme-icons/requests.png" },
-  { label: "Advanced Options", href: "/advanced-options", icon: "/theme-icons/settings.png" },
+  {
+    label: "Statement of All Wallet",
+    href: "/statement-analysis",
+    icon: "/theme-icons/wallet.png",
+  },
+  {
+    label: "List of Subscribers",
+    href: "/subscribers",
+    icon: "/theme-icons/subscription-details.png",
+  },
+  {
+    label: "List of Agents",
+    href: "/agents",
+    icon: "/theme-icons/employee-database.png",
+  },
+  {
+    label: "Promocode Settings",
+    href: "/promocode-settings",
+    icon: "/theme-icons/invoice.png",
+  },
+  {
+    label: "Non Medical Companies",
+    href: "/non-medical-companies",
+    icon: "/theme-icons/providers.png",
+  },
+  {
+    label: "Subscription Settings",
+    href: "/subscription-settings",
+    icon: "/theme-icons/subscription-details.png",
+  },
+  {
+    label: "Service Management",
+    href: "/service-management",
+    icon: "/theme-icons/orders-icon.png",
+  },
+  {
+    label: "Supervisor / Employee Management",
+    href: "/supervisor-management",
+    icon: "/theme-icons/messages.png",
+  },
+  {
+    label: "Employee & Category Assignment",
+    href: "/employee-category",
+    icon: "/theme-icons/requests.png",
+  },
+  {
+    label: "Terms & Condition Master",
+    href: "/terms-master",
+    icon: "/theme-icons/requests.png",
+  },
+  {
+    label: "Advanced Options",
+    href: "/advanced-options",
+    icon: "/theme-icons/settings.png",
+  },
 ];
 
 const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
@@ -35,15 +84,15 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
       style={{
-        backgroundColor: 'var(--sidebar-bg)',
-        zIndex: 50
+        backgroundColor: "var(--sidebar-bg)",
+        zIndex: 50,
       }}
     >
       <div
         className="salva-sidebar-head-logo w-full p-[40px] rounded-[20px] relative transition-colors duration-300"
         style={{
-          backgroundColor: 'var(--sidebar-accent)',
-          boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.4)'
+          backgroundColor: "var(--sidebar-accent)",
+          boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.4)",
         }}
       >
         <img src="/img/salva-logo.png" alt="Salwa" />
@@ -70,21 +119,28 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
                     )
                   }
                   style={({ isActive }) => ({
-                    backgroundColor: isActive ? 'var(--sidebar-hover)' : 'transparent',
-                    color: isActive ? 'var(--sidebar-hover-text)' : 'var(--sidebar-text)',
+                    backgroundColor: isActive
+                      ? "var(--sidebar-hover)"
+                      : "transparent",
+                    color: isActive
+                      ? "var(--sidebar-hover-text)"
+                      : "var(--sidebar-text)",
                   })}
                   onMouseEnter={(e) => {
-                    const isActive = e.currentTarget.classList.contains('active-nav-item');
+                    const isActive =
+                      e.currentTarget.classList.contains("active-nav-item");
                     if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'var(--sidebar-hover)';
-                      e.currentTarget.style.color = 'var(--sidebar-hover-text)';
+                      e.currentTarget.style.backgroundColor =
+                        "var(--sidebar-hover)";
+                      e.currentTarget.style.color = "var(--sidebar-hover-text)";
                     }
                   }}
                   onMouseLeave={(e) => {
-                    const isActive = e.currentTarget.classList.contains('active-nav-item');
+                    const isActive =
+                      e.currentTarget.classList.contains("active-nav-item");
                     if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = 'var(--sidebar-text)';
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = "var(--sidebar-text)";
                     }
                   }}
                 >
@@ -107,7 +163,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
                       {isActive && (
                         <div
                           className="absolute right-2 w-1 h-6 rounded-full"
-                          style={{ backgroundColor: 'var(--accent-primary)' }}
+                          style={{ backgroundColor: "var(--accent-primary)" }}
                         />
                       )}
                     </>
@@ -121,19 +177,20 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
         {/* Fixed bottom section */}
         <div className="flex-shrink-0">
           <div className="salva-sidebar-button-main lg:px-[40px] px-5 py-0 flex justify-between gap-[8px] w-full max-[800px]:flex-col">
-            <a href="javascript:;"
+            <a
+              href="javascript:;"
               className="group w-full flex items-center justify-center gap-1  font-medium text-[17px] rounded-[12px] py-4 px-4 transition-all duration-200"
               style={{
-                color: 'var(--sidebar-text)',
-                backgroundColor: 'var(--sidebar-accent)'
+                color: "var(--sidebar-text)",
+                backgroundColor: "var(--sidebar-accent)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--sidebar-hover)';
-                e.currentTarget.style.color = 'var(--sidebar-hover-text)';
+                e.currentTarget.style.backgroundColor = "var(--sidebar-hover)";
+                e.currentTarget.style.color = "var(--sidebar-hover-text)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--sidebar-accent)';
-                e.currentTarget.style.color = 'var(--sidebar-text)';
+                e.currentTarget.style.backgroundColor = "var(--sidebar-accent)";
+                e.currentTarget.style.color = "var(--sidebar-text)";
               }}
             >
               <img src="./img/settings.png" className="w-6 h-6 transition" />
@@ -143,49 +200,58 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
               onClick={toggleTheme}
               className="group w-full flex items-center justify-center gap-1  font-medium text-[17px] rounded-[12px] py-4 px-4 transition-all duration-200"
               style={{
-                color: 'var(--sidebar-text)',
-                backgroundColor: 'var(--sidebar-accent)'
+                color: "var(--sidebar-text)",
+                backgroundColor: "var(--sidebar-accent)",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--sidebar-hover)';
-                e.currentTarget.style.color = 'var(--sidebar-hover-text)';
+                e.currentTarget.style.backgroundColor = "var(--sidebar-hover)";
+                e.currentTarget.style.color = "var(--sidebar-hover-text)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--sidebar-accent)';
-                e.currentTarget.style.color = 'var(--sidebar-text)';
+                e.currentTarget.style.backgroundColor = "var(--sidebar-accent)";
+                e.currentTarget.style.color = "var(--sidebar-text)";
               }}
             >
               <img
-                src={theme === 'dark' ? "./img/darkmode.png" : "./img/darkmode.png"}
+                src={
+                  theme === "dark" ? "./img/darkmode.png" : "./img/darkmode.png"
+                }
                 className="w-6 h-6 transition"
               />
               <span className="font-medium leading-none transition">
-                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                {theme === "dark" ? "Light Mode" : "Dark Mode"}
               </span>
             </button>
           </div>
 
           <div className="salva-sidebar-app-store-play-store-button px-[40px] py-0 mt-[24px] mb-[24px] flex items-center justify-between w-full">
-            <a href="javascript:;" className="flex items-center gap-[12px] w-[42%] max-[480px]:flex-col">
+            <a
+              href="javascript:;"
+              className="flex items-center gap-[12px] w-[42%] max-[480px]:flex-col"
+            >
               <img src="./img/apple-store.png" className="w-[30px]" />
               <p
                 className="text-[12px] transition-colors duration-300"
-                style={{ color: 'var(--text-tertiary)' }}
+                style={{ color: "var(--text-tertiary)" }}
               >
                 Download it from <span className="font-medium">APP STORE</span>
               </p>
             </a>
             <span
               className="w-[2px] h-[39px] transition-colors duration-300"
-              style={{ backgroundColor: 'var(--text-tertiary)' }}
+              style={{ backgroundColor: "var(--text-tertiary)" }}
             ></span>
-            <a href="javascript:;" className="flex items-center gap-[12px] w-[42%] max-[480px]:flex-col">
+            <a
+              href="javascript:;"
+              className="flex items-center gap-[12px] w-[42%] max-[480px]:flex-col"
+            >
               <img src="./img/play-store.png" className="w-[30px]" />
               <p
                 className="text-[12px] transition-colors duration-300"
-                style={{ color: 'var(--text-tertiary)' }}
+                style={{ color: "var(--text-tertiary)" }}
               >
-                Download it from <span className="font-medium">GOOGLE PLAY</span>
+                Download it from{" "}
+                <span className="font-medium">GOOGLE PLAY</span>
               </p>
             </a>
           </div>
@@ -193,13 +259,13 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
           <div className="salva-sidebar-cpooy-right w-full px-[40px] py-0 pb-[30px]">
             <p
               className="text-[14px] transition-colors duration-300"
-              style={{ color: 'var(--text-tertiary)' }}
+              style={{ color: "var(--text-tertiary)" }}
             >
               © 2025 Bridge Health Business Service.
             </p>
             <p
               className="text-[14px] transition-colors duration-300"
-              style={{ color: 'var(--text-tertiary)' }}
+              style={{ color: "var(--text-tertiary)" }}
             >
               All Rights Reserved.
             </p>
