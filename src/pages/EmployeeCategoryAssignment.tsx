@@ -1,10 +1,14 @@
-
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from "react";
+import type { ReactNode, SelectHTMLAttributes } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/ToastProvider";
-import ComanTable, { type TableColumn, type ActionButton, type SortState } from "../components/common/ComanTable";
+import ComanTable, {
+  type TableColumn,
+  type ActionButton,
+  type SortState,
+} from "../components/common/ComanTable";
+import CommonServices from "../services/CommonServices/CommonServices";
 
 type FormMode = "create" | "edit";
 
@@ -24,16 +28,10 @@ interface EmployeeCategoryAssignmentItem {
 
 interface FormState {
   assignmentId: number | null;
-  employeeId: string;
-  employeeName: string;
-  officialEmail: string;
-  telephone: string;
+  employeeIds: string[];
   categoryId: string;
-  categoryName: string;
   serviceId: string;
-  serviceName: string;
   subServiceId: string;
-  subServiceName: string;
 }
 
 interface SelectOption {
@@ -42,8 +40,8 @@ interface SelectOption {
 }
 
 interface EmployeeOption extends SelectOption {
-  email: string;
-  phone: string;
+  email?: string;
+  phone?: string;
 }
 
 const LIST_ENDPOINT =
@@ -55,16 +53,10 @@ const UPSERT_ENDPOINT =
 
 const createDefaultFormState = (): FormState => ({
   assignmentId: null,
-  employeeId: "",
-  employeeName: "",
-  officialEmail: "",
-  telephone: "",
+  employeeIds: [],
   categoryId: "",
-  categoryName: "",
   serviceId: "",
-  serviceName: "",
   subServiceId: "",
-  subServiceName: "",
 });
 
 const parseResponse = async (response: Response): Promise<unknown> => {
@@ -108,7 +100,9 @@ const EmployeeCategoryAssignment = () => {
   const { authFetch } = useAuth();
   const { showToast } = useToast();
 
-  const [assignments, setAssignments] = useState<EmployeeCategoryAssignmentItem[]>([]);
+  const [assignments, setAssignments] = useState<
+    EmployeeCategoryAssignmentItem[]
+  >([]);
   const [listLoading, setListLoading] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,9 +114,26 @@ const EmployeeCategoryAssignment = () => {
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formMode, setFormMode] = useState<FormMode>("create");
-  const [formValues, setFormValues] = useState<FormState>(createDefaultFormState());
+  const [formValues, setFormValues] = useState<FormState>(
+    createDefaultFormState()
+  );
   const [formLoading, setFormLoading] = useState(false);
   const [formSubmitting, setFormSubmitting] = useState(false);
+
+  // Dropdown data state
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOption[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<SelectOption[]>([]);
+  const [serviceOptions, setServiceOptions] = useState<SelectOption[]>([]);
+  const [subServiceOptions, setSubServiceOptions] = useState<SelectOption[]>(
+    []
+  );
+  console.log(categoryOptions);
+  const [loadingDropdowns, setLoadingDropdowns] = useState({
+    employees: false,
+    categories: false,
+    services: false,
+    subServices: false,
+  });
 
   const loadAssignments = useCallback(async () => {
     setListLoading(true);
@@ -137,13 +148,16 @@ const EmployeeCategoryAssignment = () => {
 
       const payload = await parseResponse(response);
       if (!response.ok) {
-        throw new Error(messageFromPayload(payload, "Unable to load assignments."));
+        throw new Error(
+          messageFromPayload(payload, "Unable to load assignments.")
+        );
       }
 
       const items = extractList(payload);
       setAssignments(items);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to load assignments.";
+      const message =
+        error instanceof Error ? error.message : "Unable to load assignments.";
       setAssignments([]);
       setListError(message);
       showToast(message, "error");
@@ -152,21 +166,172 @@ const EmployeeCategoryAssignment = () => {
     }
   }, [authFetch, showToast]);
 
+  // API functions for dropdowns
+  const loadEmployeeOptions = useCallback(async () => {
+    setLoadingDropdowns((prev) => ({ ...prev, employees: true }));
+    try {
+      const response: any = await CommonServices.CommonApi({
+        parameter: "",
+        spName: "USP_GetSuperAdminList",
+        language: "EN",
+      });
+
+      if (!response || !response.success) {
+        throw new Error(
+          (response as any)?.message || "Unable to load employees."
+        );
+      }
+
+      const data = JSON.parse(response.data);
+      const options: EmployeeOption[] = data.map((item: any) => ({
+        value: item.Id?.toString() || item.Id?.toString() || "",
+        label:
+          item.employeeName ||
+          item.EmployeeName ||
+          `Employee ${item.EmployeeName || item.EmployeeName}`,
+      }));
+      setEmployeeOptions(options);
+    } catch (error) {
+      console.error("Failed to load employees:", error);
+      showToast("Failed to load employees", "error");
+    } finally {
+      setLoadingDropdowns((prev) => ({ ...prev, employees: false }));
+    }
+  }, [showToast]);
+
+  const loadCategoryOptions = useCallback(async () => {
+    setLoadingDropdowns((prev) => ({ ...prev, categories: true }));
+    try {
+      const response: any = await CommonServices.CommonApi({
+        Parameter: "",
+        SPName: "USP_GetAllAdminCategory",
+        Language: "EN",
+      });
+
+      if (!response || !response.success) {
+        throw new Error(
+          (response as any)?.message || "Unable to load categories."
+        );
+      }
+
+      const data: any = JSON.parse(response.data);
+      const options: SelectOption[] = data.map((item: any) => ({
+        value: item.Id?.toString() || item.Id?.toString() || "",
+        label: item.Name || `Category ${item.categoryId || item.id}`,
+      }));
+      setCategoryOptions(options);
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+      showToast("Failed to load categories", "error");
+    } finally {
+      setLoadingDropdowns((prev) => ({ ...prev, categories: false }));
+    }
+  }, [showToast]);
+
+  const loadServiceOptions = useCallback(
+    async (categoryId: string) => {
+      if (!categoryId) {
+        setServiceOptions([]);
+        setSubServiceOptions([]);
+        return;
+      }
+
+      setLoadingDropdowns((prev) => ({ ...prev, services: true }));
+      try {
+        const response: any = await CommonServices.CommonApi({
+          Parameter: `{"ParentId":${categoryId}}`,
+          SPName: "USP_GetAdminCategoryServices",
+          Language: "EN",
+        });
+
+        if (!response || !response.success) {
+          throw new Error(
+            (response as any)?.message || "Unable to load services."
+          );
+        }
+
+        const data = JSON.parse(response.data);
+        const options: SelectOption[] = data.map((item: any) => ({
+          value: item.Id?.toString() || item.id?.toString() || "",
+          label:
+            item.name || item.serviceName || `Service ${item.Id || item.id}`,
+        }));
+        setServiceOptions(options);
+        setSubServiceOptions([]); // Clear sub-services when category changes
+      } catch (error) {
+        console.error("Failed to load services:", error);
+        showToast("Failed to load services", "error");
+      } finally {
+        setLoadingDropdowns((prev) => ({ ...prev, services: false }));
+      }
+    },
+    [showToast]
+  );
+
+  const loadSubServiceOptions = useCallback(
+    async (serviceId: string) => {
+      if (!serviceId) {
+        setSubServiceOptions([]);
+        return;
+      }
+
+      setLoadingDropdowns((prev) => ({ ...prev, subServices: true }));
+      try {
+        const response: any = await CommonServices.CommonApi({
+          Parameter: `{"ParentId":${serviceId}}`,
+          SPName: "USP_GetAdminServiceSubServices",
+          Language: "EN",
+        });
+
+        if (!response || !response.success) {
+          throw new Error(
+            (response as any)?.message || "Unable to load sub-services."
+          );
+        }
+
+        const data = JSON.parse(response.data);
+
+        const options: SelectOption[] = data.map((item: any) => ({
+          value: item.Id?.toString() || item.id?.toString() || "",
+          label:
+            item.name ||
+            item.subServiceName ||
+            `Sub-service ${item.Id || item.id}`,
+        }));
+        setSubServiceOptions(options);
+      } catch (error) {
+        console.error("Failed to load sub-services:", error);
+        showToast("Failed to load sub-services", "error");
+      } finally {
+        setLoadingDropdowns((prev) => ({ ...prev, subServices: false }));
+      }
+    },
+    [showToast]
+  );
+
   useEffect(() => {
     void loadAssignments();
-  }, [loadAssignments]);
+    void loadEmployeeOptions();
+    void loadCategoryOptions();
+  }, [loadAssignments, loadEmployeeOptions, loadCategoryOptions]);
 
   const stats = useMemo(() => {
     const totalAssignments = assignments.length;
     const uniqueEmployees = new Set(
       assignments
         .map((item) => item.employeeId)
-        .filter((value): value is number => typeof value === "number" && !Number.isNaN(value))
+        .filter(
+          (value): value is number =>
+            typeof value === "number" && !Number.isNaN(value)
+        )
     ).size;
     const uniqueCategories = new Set(
       assignments
         .map((item) => item.categoryId)
-        .filter((value): value is number => typeof value === "number" && !Number.isNaN(value))
+        .filter(
+          (value): value is number =>
+            typeof value === "number" && !Number.isNaN(value)
+        )
     ).size;
 
     return [
@@ -174,69 +339,6 @@ const EmployeeCategoryAssignment = () => {
       { label: "Unique Employees", value: uniqueEmployees.toString() },
       { label: "Unique Categories", value: uniqueCategories.toString() },
     ];
-  }, [assignments]);
-
-  const employeeOptions = useMemo<EmployeeOption[]>(() => {
-    const map = new Map<string, EmployeeOption>();
-    assignments.forEach((item) => {
-      if (typeof item.employeeId === "number" && !Number.isNaN(item.employeeId)) {
-        const value = item.employeeId.toString();
-        if (!map.has(value)) {
-          map.set(value, {
-            value,
-            label: item.employeeName?.trim() || `Employee ${item.employeeId}`,
-            email: item.officialEmail?.trim() || "",
-            phone: item.telephone?.trim() || "",
-          });
-        }
-      }
-    });
-    return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label));
-  }, [assignments]);
-
-  const categoryOptions = useMemo<SelectOption[]>(() => {
-    const map = new Map<string, string>();
-    assignments.forEach((item) => {
-      if (typeof item.categoryId === "number" && !Number.isNaN(item.categoryId)) {
-        const value = item.categoryId.toString();
-        if (!map.has(value)) {
-          map.set(value, item.categoryName?.trim() || `Category ${item.categoryId}`);
-        }
-      }
-    });
-    return Array.from(map.entries())
-      .map(([value, label]) => ({ value, label }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [assignments]);
-
-  const serviceOptions = useMemo<SelectOption[]>(() => {
-    const map = new Map<string, string>();
-    assignments.forEach((item) => {
-      if (typeof item.serviceId === "number" && !Number.isNaN(item.serviceId)) {
-        const value = item.serviceId.toString();
-        if (!map.has(value)) {
-          map.set(value, item.serviceName?.trim() || `Service ${item.serviceId}`);
-        }
-      }
-    });
-    return Array.from(map.entries())
-      .map(([value, label]) => ({ value, label }))
-      .sort((a, b) => a.label.localeCompare(b.label));
-  }, [assignments]);
-
-  const subServiceOptions = useMemo<SelectOption[]>(() => {
-    const map = new Map<string, string>();
-    assignments.forEach((item) => {
-      if (typeof item.subServiceId === "number" && !Number.isNaN(item.subServiceId)) {
-        const value = item.subServiceId.toString();
-        if (!map.has(value)) {
-          map.set(value, item.subServiceName?.trim() || `Sub-service ${item.subServiceId}`);
-        }
-      }
-    });
-    return Array.from(map.entries())
-      .map(([value, label]) => ({ value, label }))
-      .sort((a, b) => a.label.localeCompare(b.label));
   }, [assignments]);
 
   const filteredAssignments = useMemo(() => {
@@ -283,66 +385,69 @@ const EmployeeCategoryAssignment = () => {
   };
 
   // Table columns configuration
-  const tableColumns: TableColumn<EmployeeCategoryAssignmentItem>[] = useMemo(() => [
-    {
-      label: "Assignment ID",
-      value: (row) => (
-        <span className="font-semibold text-primary">
-          #{row.assignmentId.toString().padStart(4, "0")}
-        </span>
-      ),
-      sortKey: "assignmentId",
-      isSort: true,
-    },
-    {
-      label: "Employee Name",
-      value: (row) => (
-        <span className="text-gray-700">{row.employeeName ?? "-"}</span>
-      ),
-      sortKey: "employeeName",
-      isSort: true,
-    },
-    {
-      label: "Official Email",
-      value: (row) => (
-        <span className="text-gray-500">{row.officialEmail ?? "-"}</span>
-      ),
-      sortKey: "officialEmail",
-      isSort: true,
-    },
-    {
-      label: "Telephone",
-      value: (row) => (
-        <span className="text-gray-500">{row.telephone ?? "-"}</span>
-      ),
-      sortKey: "telephone",
-      isSort: true,
-    },
-    {
-      label: "Category",
-      value: (row) => (
-        <span className="text-gray-500">{row.categoryName ?? "-"}</span>
-      ),
-      sortKey: "categoryName",
-      isSort: true,
-    },
-    {
-      label: "Service",
-      value: (row) => (
-        <span className="text-gray-500">{row.serviceName ?? "-"}</span>
-      ),
-      sortKey: "serviceName",
-      isSort: true,
-    },
-    {
-      label: "Sub-service",
-      value: (row) => (
-        <span className="text-gray-500">{row.subServiceName ?? "-"}</span>
-      ),
-      sortKey: "subServiceName",
-      isSort: true,
-    },
-  ], []);
+  const tableColumns: TableColumn<EmployeeCategoryAssignmentItem>[] = useMemo(
+    () => [
+      {
+        label: "Assignment ID",
+        value: (row) => (
+          <span className="font-semibold text-primary">
+            #{row.assignmentId.toString().padStart(4, "0")}
+          </span>
+        ),
+        sortKey: "assignmentId",
+        isSort: true,
+      },
+      {
+        label: "Employee Name",
+        value: (row) => (
+          <span className="text-gray-700">{row.employeeName ?? "-"}</span>
+        ),
+        sortKey: "employeeName",
+        isSort: true,
+      },
+      {
+        label: "Official Email",
+        value: (row) => (
+          <span className="text-gray-500">{row.officialEmail ?? "-"}</span>
+        ),
+        sortKey: "officialEmail",
+        isSort: true,
+      },
+      {
+        label: "Telephone",
+        value: (row) => (
+          <span className="text-gray-500">{row.telephone ?? "-"}</span>
+        ),
+        sortKey: "telephone",
+        isSort: true,
+      },
+      {
+        label: "Category",
+        value: (row) => (
+          <span className="text-gray-500">{row.categoryName ?? "-"}</span>
+        ),
+        sortKey: "categoryName",
+        isSort: true,
+      },
+      {
+        label: "Service",
+        value: (row) => (
+          <span className="text-gray-500">{row.serviceName ?? "-"}</span>
+        ),
+        sortKey: "serviceName",
+        isSort: true,
+      },
+      {
+        label: "Sub-service",
+        value: (row) => (
+          <span className="text-gray-500">{row.subServiceName ?? "-"}</span>
+        ),
+        sortKey: "subServiceName",
+        isSort: true,
+      },
+    ],
+    []
+  );
 
   const handleOpenCreate = () => {
     setFormMode("create");
@@ -358,51 +463,58 @@ const EmployeeCategoryAssignment = () => {
     setFormLoading(true);
 
     try {
-      const response = await authFetch(`${DETAIL_ENDPOINT}?EmployeeId=${assignment.employeeId}`, {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      });
+      const response = await authFetch(
+        `${DETAIL_ENDPOINT}?EmployeeId=${assignment.employeeId}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+          },
+        }
+      );
 
       const payload = await parseResponse(response);
       if (!response.ok) {
-        throw new Error(messageFromPayload(payload, "Unable to fetch assignment details."));
+        throw new Error(
+          messageFromPayload(payload, "Unable to fetch assignment details.")
+        );
       }
 
       const items = extractList(payload);
       const match =
-        items.find((item) => item.assignmentId === assignment.assignmentId) ?? items[0] ?? assignment;
+        items.find((item) => item.assignmentId === assignment.assignmentId) ??
+        items[0] ??
+        assignment;
 
       const formState: FormState = {
         assignmentId: match.assignmentId ?? assignment.assignmentId ?? null,
-        employeeId:
-          typeof match.employeeId === "number" && !Number.isNaN(match.employeeId)
-            ? match.employeeId.toString()
-            : "",
-        employeeName: match.employeeName?.trim() || assignment.employeeName?.trim() || "",
-        officialEmail: match.officialEmail?.trim() || assignment.officialEmail?.trim() || "",
-        telephone: match.telephone?.trim() || assignment.telephone?.trim() || "",
+        employeeIds:
+          typeof match.employeeId === "number" &&
+          !Number.isNaN(match.employeeId)
+            ? [match.employeeId.toString()]
+            : [],
         categoryId:
-          typeof match.categoryId === "number" && !Number.isNaN(match.categoryId)
+          typeof match.categoryId === "number" &&
+          !Number.isNaN(match.categoryId)
             ? match.categoryId.toString()
             : "",
-        categoryName: match.categoryName?.trim() || assignment.categoryName?.trim() || "",
         serviceId:
           typeof match.serviceId === "number" && !Number.isNaN(match.serviceId)
             ? match.serviceId.toString()
             : "",
-        serviceName: match.serviceName?.trim() || assignment.serviceName?.trim() || "",
         subServiceId:
-          typeof match.subServiceId === "number" && !Number.isNaN(match.subServiceId)
+          typeof match.subServiceId === "number" &&
+          !Number.isNaN(match.subServiceId)
             ? match.subServiceId.toString()
             : "",
-        subServiceName: match.subServiceName?.trim() || assignment.subServiceName?.trim() || "",
       };
 
       setFormValues(formState);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to fetch assignment details.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to fetch assignment details.";
       showToast(message, "error");
       setIsFormOpen(false);
     } finally {
@@ -411,25 +523,28 @@ const EmployeeCategoryAssignment = () => {
   };
 
   // Action buttons configuration
-  const actionButtons: ActionButton<EmployeeCategoryAssignmentItem>[] = useMemo(() => [
-    {
-      label: "Edit",
-      iconType: "edit",
-      onClick: handleOpenEdit,
-    },
-  ], [handleOpenEdit]);
+  const actionButtons: ActionButton<EmployeeCategoryAssignmentItem>[] = useMemo(
+    () => [
+      {
+        label: "Edit",
+        iconType: "edit",
+        onClick: handleOpenEdit,
+      },
+    ],
+    [handleOpenEdit]
+  );
 
   const handleFormSubmit = async () => {
     if (formSubmitting) {
       return;
     }
 
-    const employeeId = formValues.employeeId.trim();
+    const employeeIds = formValues.employeeIds;
     const categoryId = formValues.categoryId.trim();
     const serviceId = formValues.serviceId.trim();
     const subServiceId = formValues.subServiceId.trim();
 
-    if (!employeeId) {
+    if (employeeIds.length === 0) {
       showToast("Employee is required.", "error");
       return;
     }
@@ -443,8 +558,10 @@ const EmployeeCategoryAssignment = () => {
     }
 
     const payload = {
-      assignmentIds: formValues.assignmentId ? formValues.assignmentId.toString() : "0",
-      employeeIds: employeeId,
+      assignmentIds: formValues.assignmentId
+        ? formValues.assignmentId.toString()
+        : "0",
+      employeeIds: employeeIds.join(","),
       categoryIds: categoryId,
       serviceIds: serviceId,
       subServiceIds: subServiceId || "0",
@@ -466,12 +583,16 @@ const EmployeeCategoryAssignment = () => {
         throw new Error(messageFromPayload(body, "Unable to save assignment."));
       }
 
-      const successMessage = messageFromPayload(body, "Assignment saved successfully.");
+      const successMessage = messageFromPayload(
+        body,
+        "Assignment saved successfully."
+      );
       showToast(successMessage, "success");
       setIsFormOpen(false);
       await loadAssignments();
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to save assignment.";
+      const message =
+        error instanceof Error ? error.message : "Unable to save assignment.";
       showToast(message, "error");
     } finally {
       setFormSubmitting(false);
@@ -479,13 +600,17 @@ const EmployeeCategoryAssignment = () => {
   };
   return (
     <DashboardLayout>
-      <div className="mx-auto flex w-full  flex-col gap-8 pb-16">
-        <Header />
+      <div className="mx-auto flex w-full  flex-col gap-8 pb-3">
+        {/* <Header /> */}
         <section className="space-y-8 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="grid gap-1">
-              <h2 className="text-2xl font-semibold text-primary">Employee &amp; Category Assignment</h2>
-              <p className="text-sm text-gray-500">Assign workforce to categories and services.</p>
+              <h2 className="text-2xl font-semibold text-primary">
+                Employee &amp; Category Assignment
+              </h2>
+              <p className="text-sm text-gray-500">
+                Assign workforce to categories and services.
+              </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <SearchField value={searchTerm} onChange={setSearchTerm} />
@@ -543,6 +668,9 @@ const EmployeeCategoryAssignment = () => {
             categoryOptions={categoryOptions}
             serviceOptions={serviceOptions}
             subServiceOptions={subServiceOptions}
+            loadingDropdowns={loadingDropdowns}
+            onCategoryChange={loadServiceOptions}
+            onServiceChange={loadSubServiceOptions}
           />
         </ModalOverlay>
       )}
@@ -550,30 +678,13 @@ const EmployeeCategoryAssignment = () => {
   );
 };
 
-const Header = () => (
-  <div className="flex items-center gap-4 rounded-[28px] border border-gray-200 bg-white px-6 py-5 shadow-sm">
-    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.6}
-        className="h-5 w-5"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h16v16H4z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 4v16" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 9h16" />
-      </svg>
-    </div>
-    <div>
-      <p className="text-lg font-semibold text-primary">Employee Category Assignment</p>
-      <p className="text-sm text-gray-500">Manage employee allocation across service categories.</p>
-    </div>
-  </div>
-);
-
-const SearchField = ({ value, onChange }: { value: string; onChange: (next: string) => void }) => (
+const SearchField = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+}) => (
   <div className="relative w-full max-w-xs">
     <input
       className="w-full rounded-full border border-gray-200 bg-white px-4 py-2.5 pl-10 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
@@ -587,7 +698,11 @@ const SearchField = ({ value, onChange }: { value: string; onChange: (next: stri
   </div>
 );
 
-const StatsRow = ({ stats }: { stats: Array<{ label: string; value: string }> }) => (
+const StatsRow = ({
+  stats,
+}: {
+  stats: Array<{ label: string; value: string }>;
+}) => (
   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {stats.map((item) => (
       <div
@@ -619,6 +734,9 @@ const FormModal = ({
   categoryOptions,
   serviceOptions,
   subServiceOptions,
+  loadingDropdowns,
+  onCategoryChange,
+  onServiceChange,
 }: {
   mode: FormMode;
   values: FormState;
@@ -631,56 +749,20 @@ const FormModal = ({
   categoryOptions: SelectOption[];
   serviceOptions: SelectOption[];
   subServiceOptions: SelectOption[];
+  loadingDropdowns: {
+    employees: boolean;
+    categories: boolean;
+    services: boolean;
+    subServices: boolean;
+  };
+  onCategoryChange: (categoryId: string) => void;
+  onServiceChange: (serviceId: string) => void;
 }) => {
-  const employeeOptionsWithCurrent =
-    values.employeeId && !employeeOptions.some((option) => option.value === values.employeeId)
-      ? [
-        ...employeeOptions,
-        {
-          value: values.employeeId,
-          label: values.employeeName || `Employee ${values.employeeId}`,
-          email: values.officialEmail,
-          phone: values.telephone,
-        },
-      ]
-      : employeeOptions;
-
-  const categoryOptionsWithCurrent =
-    values.categoryId && !categoryOptions.some((option) => option.value === values.categoryId)
-      ? [
-        ...categoryOptions,
-        {
-          value: values.categoryId,
-          label: values.categoryName || `Category ${values.categoryId}`,
-        },
-      ]
-      : categoryOptions;
-
-  const serviceOptionsWithCurrent =
-    values.serviceId && !serviceOptions.some((option) => option.value === values.serviceId)
-      ? [
-        ...serviceOptions,
-        {
-          value: values.serviceId,
-          label: values.serviceName || `Service ${values.serviceId}`,
-        },
-      ]
-      : serviceOptions;
-
-  const subServiceOptionsWithCurrent =
-    values.subServiceId && !subServiceOptions.some((option) => option.value === values.subServiceId)
-      ? [
-        ...subServiceOptions,
-        {
-          value: values.subServiceId,
-          label: values.subServiceName || `Sub-service ${values.subServiceId}`,
-        },
-      ]
-      : subServiceOptions;
-
   return (
     <ModalShell
-      title={`${mode === "edit" ? "Edit" : "Add"} Employee & Category Assignment`}
+      title={`${
+        mode === "edit" ? "Edit" : "Add"
+      } Employee & Category Assignment`}
       onClose={onClose}
     >
       {isLoading ? (
@@ -689,214 +771,103 @@ const FormModal = ({
         </div>
       ) : (
         <form
-          className="space-y-6"
+          className="space-y-4"
           onSubmit={(event) => {
             event.preventDefault();
             onSubmit();
           }}
         >
-          {mode === "edit" && (
-            <LabeledInput
-              label="Assignment ID"
-              value={values.assignmentId ? values.assignmentId.toString() : "-"}
-              readOnly
-              disabled
-            />
-          )}
-          <div className="grid gap-4 sm:grid-cols-2">
-            {employeeOptionsWithCurrent.length > 0 ? (
-              <LabeledSelect
-                label="Employee"
-                value={values.employeeId}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  const meta = employeeOptionsWithCurrent.find((option) => option.value === next);
-                  onChange({
-                    ...values,
-                    employeeId: next,
-                    employeeName: meta?.label ?? "",
-                    officialEmail: meta?.email ?? "",
-                    telephone: meta?.phone ?? "",
-                  });
-                }}
-                disabled={isSubmitting}
-              >
-                <option value="">Select employee</option>
-                {employeeOptionsWithCurrent.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </LabeledSelect>
-            ) : (
-              <LabeledInput
-                label="Employee ID"
-                value={values.employeeId}
-                onChange={(event) =>
-                  onChange({
-                    ...values,
-                    employeeId: event.target.value,
-                  })
-                }
-                placeholder="Enter employee id"
-                disabled={isSubmitting}
-              />
-            )}
-            <LabeledInput
-              label="Employee Name"
-              value={values.employeeName}
-              onChange={(event) => onChange({ ...values, employeeName: event.target.value })}
-              placeholder="Enter employee name"
-              disabled={isSubmitting}
-            />
-            <LabeledInput
-              label="Official Email"
-              value={values.officialEmail}
-              onChange={(event) => onChange({ ...values, officialEmail: event.target.value })}
-              placeholder="Enter email"
-              disabled={isSubmitting}
-            />
-            <LabeledInput
-              label="Telephone"
-              value={values.telephone}
-              onChange={(event) => onChange({ ...values, telephone: event.target.value })}
-              placeholder="Enter telephone"
-              disabled={isSubmitting}
-            />
-            {categoryOptionsWithCurrent.length > 0 ? (
-              <LabeledSelect
-                label="Category"
-                value={values.categoryId}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  const meta = categoryOptionsWithCurrent.find((option) => option.value === next);
-                  onChange({
-                    ...values,
-                    categoryId: next,
-                    categoryName: meta?.label ?? "",
-                  });
-                }}
-                disabled={isSubmitting}
-              >
-                <option value="">Select category</option>
-                {categoryOptionsWithCurrent.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </LabeledSelect>
-            ) : (
-              <LabeledInput
-                label="Category ID"
-                value={values.categoryId}
-                onChange={(event) =>
-                  onChange({
-                    ...values,
-                    categoryId: event.target.value,
-                  })
-                }
-                placeholder="Enter category id"
-                disabled={isSubmitting}
-              />
-            )}
-            <LabeledInput
-              label="Category Name"
-              value={values.categoryName}
-              onChange={(event) => onChange({ ...values, categoryName: event.target.value })}
-              placeholder="Enter category name"
-              disabled={isSubmitting}
-            />
-            {serviceOptionsWithCurrent.length > 0 ? (
-              <LabeledSelect
-                label="Service"
-                value={values.serviceId}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  const meta = serviceOptionsWithCurrent.find((option) => option.value === next);
-                  onChange({
-                    ...values,
-                    serviceId: next,
-                    serviceName: meta?.label ?? "",
-                  });
-                }}
-                disabled={isSubmitting}
-              >
-                <option value="">Select service</option>
-                {serviceOptionsWithCurrent.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </LabeledSelect>
-            ) : (
-              <LabeledInput
-                label="Service ID"
-                value={values.serviceId}
-                onChange={(event) =>
-                  onChange({
-                    ...values,
-                    serviceId: event.target.value,
-                  })
-                }
-                placeholder="Enter service id"
-                disabled={isSubmitting}
-              />
-            )}
-            <LabeledInput
-              label="Service Name"
-              value={values.serviceName}
-              onChange={(event) => onChange({ ...values, serviceName: event.target.value })}
-              placeholder="Enter service name"
-              disabled={isSubmitting}
-            />
-            {subServiceOptionsWithCurrent.length > 0 ? (
-              <LabeledSelect
-                label="Sub-service"
-                value={values.subServiceId}
-                onChange={(event) => {
-                  const next = event.target.value;
-                  const meta = subServiceOptionsWithCurrent.find((option) => option.value === next);
-                  onChange({
-                    ...values,
-                    subServiceId: next,
-                    subServiceName: meta?.label ?? "",
-                  });
-                }}
-                disabled={isSubmitting}
-              >
-                <option value="">Select sub-service</option>
-                {subServiceOptionsWithCurrent.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </LabeledSelect>
-            ) : (
-              <LabeledInput
-                label="Sub-service ID"
-                value={values.subServiceId}
-                onChange={(event) =>
-                  onChange({
-                    ...values,
-                    subServiceId: event.target.value,
-                  })
-                }
-                placeholder="Enter sub-service id"
-                disabled={isSubmitting}
-              />
-            )}
-            <LabeledInput
-              label="Sub-service Name"
-              value={values.subServiceName}
-              onChange={(event) => onChange({ ...values, subServiceName: event.target.value })}
-              placeholder="Enter sub-service name"
-              disabled={isSubmitting}
-            />
+          <div className="grid gap-4 grid-cols-2">
+            <LabeledSelect
+              value={values.employeeIds[0] || ""}
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                onChange({
+                  ...values,
+                  employeeIds: selectedValue ? [selectedValue] : [],
+                });
+              }}
+              disabled={isSubmitting || loadingDropdowns.employees}
+            >
+              <option value="">Select employee</option>
+              {employeeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </LabeledSelect>
+
+            <LabeledSelect
+              value={values.categoryId}
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                onChange({
+                  ...values,
+                  categoryId: selectedValue,
+                  serviceId: "",
+                  subServiceId: "",
+                });
+                onCategoryChange(selectedValue);
+              }}
+              disabled={isSubmitting || loadingDropdowns.categories}
+            >
+              <option value="">Select category</option>
+              {categoryOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </LabeledSelect>
+
+            <LabeledSelect
+              value={values.serviceId}
+              onChange={(event) => {
+                const selectedValue = event.target.value;
+                onChange({
+                  ...values,
+                  serviceId: selectedValue,
+                  subServiceId: "",
+                });
+                onServiceChange(selectedValue);
+              }}
+              disabled={
+                isSubmitting || loadingDropdowns.services || !values.categoryId
+              }
+            >
+              <option value="">Select service</option>
+              {serviceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </LabeledSelect>
+
+            <LabeledSelect
+              value={values.subServiceId}
+              onChange={(event) => {
+                onChange({
+                  ...values,
+                  subServiceId: event.target.value,
+                });
+              }}
+              disabled={
+                isSubmitting ||
+                loadingDropdowns.subServices ||
+                !values.serviceId
+              }
+            >
+              <option value="">Select sub-service</option>
+              {subServiceOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </LabeledSelect>
           </div>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
-              className="rounded-full border border-gray-300 px-6 py-2 text-sm font-semibold text-gray-500 hover:border-primary"
+              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={onClose}
               disabled={isSubmitting}
             >
@@ -904,10 +875,10 @@ const FormModal = ({
             </button>
             <button
               type="submit"
-              className="rounded-full bg-primary px-10 py-3 text-sm font-semibold text-white shadow hover:bg-[#030447] disabled:cursor-not-allowed disabled:bg-primary/70"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-blue-400"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving..." : mode === "edit" ? "Update Assignment" : "Save Assignment"}
+              {isSubmitting ? "Saving..." : "Save"}
             </button>
           </div>
         </form>
@@ -916,40 +887,28 @@ const FormModal = ({
   );
 };
 
-const LabeledInput = ({
-  label,
-  className = "",
-  ...props
-}: { label: string } & InputHTMLAttributes<HTMLInputElement>) => (
-  <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    {label}
-    <input
-      {...props}
-      className={`w-full rounded-[20px] border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
-    />
-  </label>
-);
-
 const LabeledSelect = ({
   label,
   className = "",
   children,
   ...props
-}: { label: string; children: ReactNode } & SelectHTMLAttributes<HTMLSelectElement>) => (
-  <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    {label}
+}: {
+  label?: string;
+  children: ReactNode;
+} & SelectHTMLAttributes<HTMLSelectElement>) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label || ""}
+    </label>
     <div className="relative">
       <select
         {...props}
-        className={`w-full appearance-none rounded-[20px] border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
+        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
       >
         {children}
       </select>
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-        <ChevronIcon />
-      </span>
     </div>
-  </label>
+  </div>
 );
 
 const ActionButton = ({
@@ -993,42 +952,64 @@ const ModalShell = ({
   onClose: () => void;
   children: ReactNode;
 }) => (
-  <div className="w-full max-w-2xl rounded-[36px] bg-white px-8 py-10 shadow-[0_40px_90px_rgba(5,6,104,0.18)]">
-    <div className="flex items-center justify-between gap-4">
-      <h3 className="text-xl font-semibold text-primary">{title}</h3>
+  <div className="w-full max-w-2xl rounded-lg bg-white px-6 py-6 shadow-lg">
+    <div className="flex items-center justify-between gap-4 mb-6">
+      <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
       <button
         type="button"
         aria-label="Close"
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f7f8fd] text-gray-500 transition hover:bg-primary/10 hover:text-primary"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200 hover:text-gray-700"
         onClick={onClose}
       >
         <CloseIcon />
       </button>
     </div>
-    <div className="mt-8 space-y-6">{children}</div>
+    <div className="space-y-4">{children}</div>
   </div>
 );
 
 const CloseIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M18 6L6 18" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    className="h-4 w-4"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M6 6l12 12M18 6L6 18"
+    />
   </svg>
 );
 
 const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    className="h-4 w-4"
+  >
     <circle cx="11" cy="11" r="7" />
     <path strokeLinecap="round" strokeLinejoin="round" d="m20 20-3-3" />
   </svg>
 );
 
 const ChevronIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-3 w-3">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 20"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    className="h-3 w-3"
+  >
     <path strokeLinecap="round" strokeLinejoin="round" d="m6 8 4 4 4-4" />
   </svg>
 );
 
-
 export default EmployeeCategoryAssignment;
-
-
