@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
+import { StatisticsServices } from "../services/StatisticsServices/StatisticsServices";
+import ReportServices from "../services/ReportServices/ReportServices";
 
 const CurrencyIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
@@ -13,10 +16,6 @@ const PendingIcon = () => (
   </svg>
 );
 
-type FilterConfig = {
-  label: string;
-  options: string[];
-};
 
 type StatCard = {
   title: string;
@@ -24,73 +23,443 @@ type StatCard = {
   icon?: ReactNode;
 };
 
-const subscriptionFilters: FilterConfig[] = [
-  { label: "User Type", options: ["All", "Individual", "Corporate"] },
-  { label: "Month", options: ["Jan", "Feb", "Mar"] },
-  { label: "Year", options: ["2025", "2024", "2023"] },
+// Generate year options (last 10 years)
+const generateYearOptions = () => {
+  const currentYear = new Date().getFullYear();
+  return Array.from({ length: 10 }, (_, i) => (currentYear - i).toString());
+};
+
+// Month options
+const monthOptions = [
+  { value: 1, label: "January" },
+  { value: 2, label: "February" },
+  { value: 3, label: "March" },
+  { value: 4, label: "April" },
+  { value: 5, label: "May" },
+  { value: 6, label: "June" },
+  { value: 7, label: "July" },
+  { value: 8, label: "August" },
+  { value: 9, label: "September" },
+  { value: 10, label: "October" },
+  { value: 11, label: "November" },
+  { value: 12, label: "December" },
 ];
 
-const userFilters: FilterConfig[] = [
-  { label: "User Type", options: ["All", "New", "Returning"] },
-  { label: "Month", options: ["Jan", "Feb", "Mar"] },
-  { label: "Year", options: ["2025", "2024", "2023"] },
+// User type options
+const userTypeOptions = [
+  { value: 1, label: "Individual" },
+  { value: 2, label: "Business" },
 ];
 
-const serviceFilters: FilterConfig[] = [
-  { label: "Insurance Type", options: ["All", "Premium", "Basic"] },
-  { label: "Service", options: ["All", "Telehealth", "On-site"] },
-  { label: "Sub-type", options: ["All", "Standard", "Custom"] },
-  { label: "Branch", options: ["All", "Riyadh", "Jeddah"] },
-  { label: "Year", options: ["2025", "2024"] },
-];
 
-const subscriptionCards: StatCard[] = [
-  { title: "Number of Active Users", value: "244" },
-  { title: "Number of Active Subscribers", value: "22" },
-  { title: "Total Subscription Revenue", value: "266", icon: <CurrencyIcon /> },
-];
-
-const userCards: StatCard[] = [
-  { title: "Number of New Users", value: "244" },
-  { title: "Number of Active Users", value: "22" },
-  { title: "Number of Pending Users", value: "266", icon: <PendingIcon /> },
-];
-
-const serviceCards: StatCard[] = [
-  { title: "Number of Orders", value: "244" },
-  { title: "Number of Completed Orders", value: "22" },
-  { title: "Number of Pending Orders", value: "266" },
-  { title: "Total Revenue Amount", value: "244", icon: <CurrencyIcon /> },
-  { title: "Total Commission Amount", value: "22", icon: <CurrencyIcon /> },
-  { title: "Total Payment Gateway Amount", value: "266", icon: <CurrencyIcon /> },
-];
-
-const insuranceFilters: FilterConfig[] = [
-  { label: "Month", options: ["Jan", "Feb", "Mar"] },
-  { label: "Year", options: ["2025", "2024", "2023"] },
-];
-
-const insuranceCards: StatCard[] = [
-  { title: "Total Appointment Booked", value: "244" },
-  { title: "Total Insurance", value: "22" },
-  { title: "Total Successful Bookings", value: "266" },
-  { title: "Total Cancel Appointment", value: "244" },
-  { title: "Total Insurance Claimed", value: "22" },
-  { title: "Total Unpaid Deductions", value: "164" },
-];
 
 const Dashboard = () => {
+  // Subscription Statistics state
+  const [subscriptionData, setSubscriptionData] = useState<any>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [subscriptionFilters, setSubscriptionFilters] = useState({
+    userType: 1, // Default to Individual
+    month: new Date().getMonth() + 1, // Current month
+    year: new Date().getFullYear(), // Current year
+  });
+
+  // User Statistics state
+  const [userData, setUserData] = useState<any>(null);
+  const [userLoading, setUserLoading] = useState(false);
+  const [userFilters, setUserFilters] = useState({
+    userType: 1, // Default to Individual
+    month: new Date().getMonth() + 1, // Current month
+    year: new Date().getFullYear(), // Current year
+  });
+
+  // Service Statistics state
+  const [serviceData, setServiceData] = useState<any>(null);
+  const [serviceLoading, setServiceLoading] = useState(false);
+  const [serviceFilters, setServiceFilters] = useState({
+    categoryId: null as number | null,
+    serviceName: null as string | null,
+    month: new Date().getMonth() + 1, // Current month
+    year: new Date().getFullYear(), // Current year
+    subServiceName: null as string | null,
+  });
+  const [categories, setCategories] = useState<any[]>([]);
+  const [services, setServices] = useState<any[]>([]);
+  const [subServices, setSubServices] = useState<any[]>([]);
+
+  // Insurance Statistics state
+  const [insuranceData, setInsuranceData] = useState<any>(null);
+  const [insuranceLoading, setInsuranceLoading] = useState(false);
+  const [insuranceFilters, setInsuranceFilters] = useState({
+    month: new Date().getMonth() + 1, // Current month
+    year: new Date().getFullYear(), // Current year
+  });
+
+  // Load subscription statistics
+  const loadSubscriptionStatistics = async () => {
+    try {
+      setSubscriptionLoading(true);
+      const response = await StatisticsServices.GetSubscriberStatistics(
+        subscriptionFilters.userType,
+        subscriptionFilters.month,
+        subscriptionFilters.year
+      );
+      
+      if (response && "data" in response && response.data) {
+        setSubscriptionData(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading subscription statistics:", error);
+    } finally {
+      setSubscriptionLoading(false);
+    }
+  };
+
+  // Load user statistics
+  const loadUserStatistics = async () => {
+    try {
+      setUserLoading(true);
+      const response = await StatisticsServices.GetUserStatistics(
+        userFilters.userType,
+        userFilters.month,
+        userFilters.year
+      );
+      
+      if (response && "data" in response && response.data) {
+        setUserData(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading user statistics:", error);
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
+  // Load data on component mount and when filters change
+  useEffect(() => {
+    loadSubscriptionStatistics();
+  }, [subscriptionFilters]);
+
+  useEffect(() => {
+    loadUserStatistics();
+  }, [userFilters]);
+
+  // Load service statistics
+  const loadServiceStatistics = async () => {
+    try {
+      setServiceLoading(true);
+      const response = await StatisticsServices.GetServiceStatistics(
+        serviceFilters.categoryId,
+        serviceFilters.serviceName,
+        serviceFilters.month,
+        serviceFilters.year,
+        serviceFilters.subServiceName
+      );
+      
+      if (response && "data" in response && response.data) {
+        setServiceData(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading service statistics:", error);
+    } finally {
+      setServiceLoading(false);
+    }
+  };
+
+  // Load categories
+  const loadCategories = async () => {
+    try {
+      const response = await ReportServices.GetCategories();
+      if (response && "data" in response && response.data) {
+        setCategories(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+  };
+
+  // Load services based on category
+  const loadServices = async (categoryId: number) => {
+    try {
+      const response = await ReportServices.GetServices(categoryId);
+      if (response && "data" in response && response.data) {
+        setServices(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading services:", error);
+    }
+  };
+
+  // Load sub-services based on service
+  const loadSubServices = async (serviceId: number) => {
+    try {
+      const response = await ReportServices.GetSubServices(serviceId);
+      if (response && "data" in response && response.data) {
+        setSubServices(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading sub-services:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadServiceStatistics();
+  }, [serviceFilters]);
+
+  // Load initial categories
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  // Load insurance statistics
+  const loadInsuranceStatistics = async () => {
+    try {
+      setInsuranceLoading(true);
+      const response = await StatisticsServices.GetInsuranceStatistics(
+        insuranceFilters.month,
+        insuranceFilters.year
+      );
+      
+      if (response && "data" in response && response.data) {
+        setInsuranceData(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading insurance statistics:", error);
+    } finally {
+      setInsuranceLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadInsuranceStatistics();
+  }, [insuranceFilters]);
+
+  // Handle filter changes
+  const handleSubscriptionFilterChange = (key: string, value: string | number) => {
+    setSubscriptionFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleUserFilterChange = (key: string, value: string | number) => {
+    setUserFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  const handleServiceFilterChange = (key: string, value: string | number | null) => {
+    setServiceFilters(prev => {
+      const newFilters = { ...prev, [key]: value };
+      
+      // Handle cascading dropdowns
+      if (key === 'categoryId') {
+        // Clear service and sub-service when category changes
+        newFilters.serviceName = null;
+        newFilters.subServiceName = null;
+        setServices([]);
+        setSubServices([]);
+        
+        // Load services for the new category
+        if (value) {
+          loadServices(value as number);
+        }
+      } else if (key === 'serviceName') {
+        // Clear sub-service when service changes
+        newFilters.subServiceName = null;
+        setSubServices([]);
+        
+        // Find the service ID for the selected service name
+        const selectedService = services.find(service => 
+          (service.Name || service.name || service.serviceName) === value
+        );
+        
+        // Load sub-services for the new service
+        if (selectedService && (selectedService.Id || selectedService.id)) {
+          loadSubServices(Number(selectedService.Id || selectedService.id));
+        }
+      }
+      
+      return newFilters;
+    });
+  };
+
+  const handleInsuranceFilterChange = (key: string, value: string | number) => {
+    setInsuranceFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+
+  // Generate subscription cards from API data
+  const getSubscriptionCards = (): StatCard[] => {
+    if (!subscriptionData) {
+      return [
+        { title: "Number of Subscribers", value: "0" },
+        { title: "Number of Active Subscribers", value: "0" },
+        { title: "Total Subscription Revenue", value: "0", icon: <CurrencyIcon /> },
+      ];
+    }
+
+    return [
+      { 
+        title: "Number of Subscribers", 
+        value: subscriptionData.numberOfSubscribers?.toString() || "0" 
+      },
+      { 
+        title: "Number of Active Subscribers", 
+        value: subscriptionData.activeSubscribers?.toString() || "0" 
+      },
+      { 
+        title: "Total Subscription Revenue", 
+        value: `${subscriptionData.totalRevenue || 0} SAR`, 
+        icon: <CurrencyIcon /> 
+      },
+    ];
+  };
+
+  // Generate user cards from API data
+  const getUserCards = (): StatCard[] => {
+    if (!userData) {
+      return [
+        { title: "Number of Users", value: "0" },
+        { title: "Number of Active Users", value: "0" },
+        { title: "Number of Inactive Users", value: "0", icon: <PendingIcon /> },
+      ];
+    }
+
+    return [
+      { 
+        title: "Number of Users", 
+        value: userData.numberOfUsers?.toString() || "0" 
+      },
+      { 
+        title: "Number of Active Users", 
+        value: userData.activeUsers?.toString() || "0" 
+      },
+      { 
+        title: "Number of Inactive Users", 
+        value: userData.inactiveUsers?.toString() || "0", 
+        icon: <PendingIcon /> 
+      },
+    ];
+  };
+
+  // Generate service cards from API data
+  const getServiceCards = (): StatCard[] => {
+    if (!serviceData) {
+      return [
+        { title: "Number of Orders", value: "0" },
+        { title: "Number of Completed Orders", value: "0" },
+        { title: "Number of Pending Orders", value: "0" },
+        { title: "Total Revenue Amount", value: "0", icon: <CurrencyIcon /> },
+        { title: "Total Commission Amount", value: "0", icon: <CurrencyIcon /> },
+        { title: "Total Payment Gateway Amount", value: "0", icon: <CurrencyIcon /> },
+      ];
+    }
+
+    return [
+      { 
+        title: "Number of Orders", 
+        value: serviceData.numberOfOrders?.toString() || serviceData.totalOrders?.toString() || "0" 
+      },
+      { 
+        title: "Number of Completed Orders", 
+        value: serviceData.completedOrders?.toString() || serviceData.numberOfCompletedOrders?.toString() || "0" 
+      },
+      { 
+        title: "Number of Pending Orders", 
+        value: serviceData.pendingOrders?.toString() || serviceData.numberOfPendingOrders?.toString() || "0" 
+      },
+      { 
+        title: "Total Revenue Amount", 
+        value: `${serviceData.totalRevenue || serviceData.revenueAmount || 0} SAR`, 
+        icon: <CurrencyIcon /> 
+      },
+      { 
+        title: "Total Commission Amount", 
+        value: `${serviceData.totalCommission || serviceData.commissionAmount || 0} SAR`, 
+        icon: <CurrencyIcon /> 
+      },
+      { 
+        title: "Total Payment Gateway Amount", 
+        value: `${serviceData.totalPaymentGateway || serviceData.paymentGatewayAmount || 0} SAR`, 
+        icon: <CurrencyIcon /> 
+      },
+    ];
+  };
+
+  // Generate insurance cards from API data
+  const getInsuranceCards = (): StatCard[] => {
+    if (!insuranceData) {
+      return [
+        { title: "Total Appointment Booked", value: "0" },
+        { title: "Total Insurance", value: "0" },
+        { title: "Total Successful Bookings", value: "0" },
+        { title: "Total Cancel Appointment", value: "0" },
+        { title: "Total Insurance Claimed", value: "0" },
+        { title: "Total Unpaid Deductions", value: "0" },
+      ];
+    }
+
+    return [
+      { 
+        title: "Total Appointment Booked", 
+        value: insuranceData.totalAppointmentUser?.toString() || "0" 
+      },
+      { 
+        title: "Total Insurance", 
+        value: insuranceData.uniqAppointmentUser?.toString() || "0" 
+      },
+      { 
+        title: "Total Successful Bookings", 
+        value: insuranceData.totalSuccessfulBookings?.toString() || insuranceData.successfulBookings?.toString() || "0" 
+      },
+      { 
+        title: "Total Cancel Appointment", 
+        value: insuranceData.cancelAppointmentUser?.toString() || "0" 
+      },
+      { 
+        title: "Total Insurance Claimed", 
+        value: insuranceData.totalInsuranceClaimed?.toString() || insuranceData.insuranceClaimed?.toString() || "0" 
+      },
+      { 
+        title: "Total Unpaid Deductions", 
+        value: insuranceData.sumOfDeductible?.toString() || "0" 
+      },
+    ];
+  };
+
   return (
     <DashboardLayout>
       <div className="mx-auto flex w-full  flex-col gap-8 pb-3">
         <AnalysisHero />
-        <Section title="Subscription Statistics" filters={subscriptionFilters} cards={subscriptionCards} />
-        <Section title="User Statistics" filters={userFilters} cards={userCards} />
-        <Section title="Service Statistics" filters={serviceFilters} cards={serviceCards} />
-        <Section
-          title="Insurance Statistics"
+        <SubscriptionStatisticsSection 
+          filters={subscriptionFilters}
+          onFilterChange={handleSubscriptionFilterChange}
+          cards={getSubscriptionCards()}
+          loading={subscriptionLoading}
+        />
+        <UserStatisticsSection 
+          filters={userFilters}
+          onFilterChange={handleUserFilterChange}
+          cards={getUserCards()}
+          loading={userLoading}
+        />
+        <ServiceStatisticsSection 
+          filters={serviceFilters}
+          onFilterChange={handleServiceFilterChange}
+          cards={getServiceCards()}
+          loading={serviceLoading}
+          categories={categories}
+          services={services}
+          subServices={subServices}
+        />
+        <InsuranceStatisticsSection 
           filters={insuranceFilters}
-          cards={insuranceCards}
+          onFilterChange={handleInsuranceFilterChange}
+          cards={getInsuranceCards()}
+          loading={insuranceLoading}
           footer={
             <div className="rounded-[28px] border border-dashed border-gray-300 bg-[#f6f7fb] px-6 py-12 text-center text-sm text-gray-500">
               Analytics chart placeholder
@@ -102,18 +471,66 @@ const Dashboard = () => {
   );
 };
 
-interface SectionProps {
-  title: string;
-  filters: FilterConfig[];
+
+interface SubscriptionStatisticsSectionProps {
+  filters: {
+    userType: number;
+    month: number;
+    year: number;
+  };
+  onFilterChange: (key: string, value: string | number) => void;
   cards: StatCard[];
+  loading: boolean;
+}
+
+interface UserStatisticsSectionProps {
+  filters: {
+    userType: number;
+    month: number;
+    year: number;
+  };
+  onFilterChange: (key: string, value: string | number) => void;
+  cards: StatCard[];
+  loading: boolean;
+}
+
+interface ServiceStatisticsSectionProps {
+  filters: {
+    categoryId: number | null;
+    serviceName: string | null;
+    month: number;
+    year: number;
+    subServiceName: string | null;
+  };
+  onFilterChange: (key: string, value: string | number | null) => void;
+  cards: StatCard[];
+  loading: boolean;
+  categories: any[];
+  services: any[];
+  subServices: any[];
+}
+
+interface InsuranceStatisticsSectionProps {
+  filters: {
+    month: number;
+    year: number;
+  };
+  onFilterChange: (key: string, value: string | number) => void;
+  cards: StatCard[];
+  loading: boolean;
   footer?: ReactNode;
 }
 
-const Section = ({ title, filters, cards, footer }: SectionProps) => {
+const SubscriptionStatisticsSection = ({ 
+  filters, 
+  onFilterChange, 
+  cards, 
+  loading 
+}: SubscriptionStatisticsSectionProps) => {
   return (
     <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
       <header className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-2xl font-semibold text-primary">{title}</h2>
+        <h2 className="text-2xl font-semibold text-primary">Subscription Statistics</h2>
         <button
           type="button"
           className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
@@ -121,43 +538,484 @@ const Section = ({ title, filters, cards, footer }: SectionProps) => {
           Export
         </button>
       </header>
-      {filters.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filters.map((filter) => (
-            <div key={filter.label} className="space-y-1">
-              <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-                {filter.label}
-              </label>
-              <div className="relative">
-                <select className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
-                  {filter.options.map((option) => (
-                    <option key={option}>{option}</option>
-                  ))}
-                </select>
-                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-                  <ChevronDownIcon />
-                </span>
-              </div>
-            </div>
-          ))}
+      
+      {/* Custom Filter Dropdowns */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* User Type Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            User Type
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.userType}
+              onChange={(e) => onFilterChange('userType', parseInt(e.target.value))}
+            >
+              {userTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
         </div>
-      )}
+
+        {/* Month Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Month
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.month}
+              onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
+            >
+              {monthOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Year Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Year
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.year}
+              onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
+            >
+              {generateYearOptions().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((card) => (
           <article
             key={card.title}
             className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-gray-100 bg-[#f7f8fd] px-6 py-8 text-center shadow-[0_20px_40px_rgba(5,6,104,0.08)]"
           >
-            {card.icon && <span className="text-primary">{card.icon}</span>}
-            <p className="text-4xl font-semibold text-primary">{card.value}</p>
-            <p className="text-sm text-gray-500">{card.title}</p>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              <>
+                {card.icon && <span className="text-primary">{card.icon}</span>}
+                <p className="text-4xl font-semibold text-primary">{card.value}</p>
+                <p className="text-sm text-gray-500">{card.title}</p>
+              </>
+            )}
           </article>
         ))}
       </div>
+    </section>
+  );
+};
+
+const UserStatisticsSection = ({ 
+  filters, 
+  onFilterChange, 
+  cards, 
+  loading 
+}: UserStatisticsSectionProps) => {
+  return (
+    <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-2xl font-semibold text-primary">User Statistics</h2>
+        <button
+          type="button"
+          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
+        >
+          Export
+        </button>
+      </header>
+      
+      {/* Custom Filter Dropdowns */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* User Type Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            User Type
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.userType}
+              onChange={(e) => onFilterChange('userType', parseInt(e.target.value))}
+            >
+              {userTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Month Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Month
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.month}
+              onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
+            >
+              {monthOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Year Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Year
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.year}
+              onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
+            >
+              {generateYearOptions().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => (
+          <article
+            key={card.title}
+            className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-gray-100 bg-[#f7f8fd] px-6 py-8 text-center shadow-[0_20px_40px_rgba(5,6,104,0.08)]"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              <>
+                {card.icon && <span className="text-primary">{card.icon}</span>}
+                <p className="text-4xl font-semibold text-primary">{card.value}</p>
+                <p className="text-sm text-gray-500">{card.title}</p>
+              </>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const ServiceStatisticsSection = ({ 
+  filters, 
+  onFilterChange, 
+  cards, 
+  loading,
+  categories,
+  services,
+  subServices
+}: ServiceStatisticsSectionProps) => {
+  return (
+    <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-2xl font-semibold text-primary">Service Statistics</h2>
+        <button
+          type="button"
+          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
+        >
+          Export
+        </button>
+      </header>
+      
+      {/* Custom Filter Dropdowns */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {/* Category Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Category
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.categoryId || ""}
+              onChange={(e) => onFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : null)}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.Id || category.id} value={category.Id || category.id}>
+                  {category.Name || category.name}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Service Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Service
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.serviceName || ""}
+              onChange={(e) => onFilterChange('serviceName', e.target.value || null)}
+              disabled={!filters.categoryId}
+            >
+              <option value="">All Services</option>
+              {services.map((service) => (
+                <option key={service.Id || service.id} value={service.Name || service.name || service.serviceName}>
+                  {service.Name || service.name || service.serviceName}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Sub-Service Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Sub Service
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.subServiceName || ""}
+              onChange={(e) => onFilterChange('subServiceName', e.target.value || null)}
+              disabled={!filters.serviceName}
+            >
+              <option value="">All Sub-Services</option>
+              {subServices.map((subService) => (
+                <option key={subService.Id || subService.id} value={subService.Name || subService.name || subService.subServiceName}>
+                  {subService.Name || subService.name || subService.subServiceName}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Month Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Month
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.month}
+              onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
+            >
+              {monthOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Year Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Year
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.year}
+              onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
+            >
+              {generateYearOptions().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => (
+          <article
+            key={card.title}
+            className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-gray-100 bg-[#f7f8fd] px-6 py-8 text-center shadow-[0_20px_40px_rgba(5,6,104,0.08)]"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              <>
+                {card.icon && <span className="text-primary">{card.icon}</span>}
+                <p className="text-4xl font-semibold text-primary">{card.value}</p>
+                <p className="text-sm text-gray-500">{card.title}</p>
+              </>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const InsuranceStatisticsSection = ({ 
+  filters, 
+  onFilterChange, 
+  cards, 
+  loading,
+  footer
+}: InsuranceStatisticsSectionProps) => {
+  return (
+    <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
+      <header className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-2xl font-semibold text-primary">Insurance Statistics</h2>
+        <button
+          type="button"
+          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
+        >
+          Export
+        </button>
+      </header>
+      
+      {/* Custom Filter Dropdowns */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
+        {/* Month Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Month
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.month}
+              onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
+            >
+              {monthOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+
+        {/* Year Dropdown */}
+        <div className="space-y-1">
+          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+            Year
+          </label>
+          <div className="relative">
+            <select 
+              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              value={filters.year}
+              onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
+            >
+              {generateYearOptions().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+              <ChevronDownIcon />
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {cards.map((card) => (
+          <article
+            key={card.title}
+            className="flex flex-col items-center justify-center gap-3 rounded-[28px] border border-gray-100 bg-[#f7f8fd] px-6 py-8 text-center shadow-[0_20px_40px_rgba(5,6,104,0.08)]"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+              </div>
+            ) : (
+              <>
+                {card.icon && <span className="text-primary">{card.icon}</span>}
+                <p className="text-4xl font-semibold text-primary">{card.value}</p>
+                <p className="text-sm text-gray-500">{card.title}</p>
+              </>
+            )}
+          </article>
+        ))}
+      </div>
+
+      {/* Footer */}
       {footer}
     </section>
   );
 };
+
 
 const AnalysisHero = () => (
   <div className="flex items-center gap-4 rounded-[28px] border border-gray-200 bg-white px-6 py-5 shadow-sm">

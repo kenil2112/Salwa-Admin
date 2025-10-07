@@ -20,6 +20,7 @@ import PromocodeSettings from "./pages/PromocodeSettings";
 import NonMedicalCompanies from "./pages/NonMedicalCompanies";
 import AgentIndividualDetail from "./pages/AgentIndividualDetail";
 import AgentBusinessDetail from "./pages/AgentBusinessDetail";
+import SupervisorDetail from "./pages/SupervisorDetail";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App = () => {
@@ -78,6 +79,7 @@ const App = () => {
         <Route path="/agents" element={<ListAgents />} />
         <Route path="/agents/individual/:id" element={<AgentIndividualDetail />} />
         <Route path="/agents/business/:id" element={<AgentBusinessDetail />} />
+        <Route path="/supervisor-management/:id" element={<SupervisorDetail />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/supervisor-management" element={<SupervisorManagement />} />
         {/* <Route path="/supervisor-management/add" element={<AddSupervisor />} />

@@ -8,7 +8,7 @@ const options = [
 
 const AdvancedOptions = () => (
   <DashboardLayout>
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 pb-16">
+    <div className="mx-auto flex w-full  flex-col gap-8 pb-16">
       <Header />
       <section className="space-y-4 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
         {options.map((option) => (
