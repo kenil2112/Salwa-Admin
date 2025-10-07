@@ -1,6 +1,8 @@
 import clsx from "clsx";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "../context/ThemeContext";
+import { useLanguage } from "../context/LanguageContext";
 import type { FC } from "react";
 
 interface SidebarProps {
@@ -8,66 +10,66 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const menuItems = [
-  { label: "Analysis", href: "/dashboard", icon: "/theme-icons/analysis.png" },
+const getMenuItems = (t: any) => [
+  { label: t('sidebar.analysis'), href: "/dashboard", icon: "/theme-icons/analysis.png" },
   {
-    label: "Services Dashboard",
+    label: t('sidebar.serviceDashboard'),
     href: "/service-dashboard",
     icon: "/theme-icons/providers.png",
   },
-  { label: "Reports", href: "/reports", icon: "/theme-icons/report.png" },
+  { label: t('sidebar.reports'), href: "/reports", icon: "/theme-icons/report.png" },
   {
-    label: "Statement of All Wallet",
+    label: t('sidebar.statementAnalysis'),
     href: "/statement-analysis",
     icon: "/theme-icons/wallet.png",
   },
   {
-    label: "List of Subscribers",
+    label: t('sidebar.subscribers'),
     href: "/subscribers",
     icon: "/theme-icons/subscription-details.png",
   },
   {
-    label: "List of Agents",
+    label: t('sidebar.agents'),
     href: "/agents",
     icon: "/theme-icons/employee-database.png",
   },
   {
-    label: "Promocode Settings",
+    label: t('sidebar.promocodeSettings'),
     href: "/promocode-settings",
     icon: "/theme-icons/invoice.png",
   },
   {
-    label: "Non Medical Companies",
+    label: t('sidebar.nonMedicalCompanies'),
     href: "/non-medical-companies",
     icon: "/theme-icons/providers.png",
   },
   {
-    label: "Subscription Settings",
+    label: t('sidebar.subscriptionSettings'),
     href: "/subscription-settings",
     icon: "/theme-icons/subscription-details.png",
   },
   {
-    label: "Service Management",
+    label: t('sidebar.serviceManagement'),
     href: "/service-management",
     icon: "/theme-icons/orders-icon.png",
   },
   {
-    label: "Supervisor / Employee Management",
+    label: t('sidebar.supervisorManagement'),
     href: "/supervisor-management",
     icon: "/theme-icons/messages.png",
   },
   {
-    label: "Employee & Category Assignment",
+    label: t('sidebar.employeeCategory'),
     href: "/employee-category",
     icon: "/theme-icons/requests.png",
   },
   {
-    label: "Terms & Condition Master",
+    label: t('sidebar.termsMaster'),
     href: "/terms-master",
     icon: "/theme-icons/requests.png",
   },
   {
-    label: "Advanced Options",
+    label: t('sidebar.advancedOptions'),
     href: "/advanced-options",
     icon: "/theme-icons/settings.png",
   },
@@ -75,6 +77,9 @@ const menuItems = [
 
 const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { theme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
+  const { isRTL } = useLanguage();
+  const menuItems = getMenuItems(t);
 
   return (
     <div
@@ -194,7 +199,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
               }}
             >
               <img src="./img/settings.png" className="w-6 h-6 transition" />
-              <span className="transition">Settings</span>
+              <span className="transition">{t('common.settings')}</span>
             </a>
             <button
               onClick={toggleTheme}
@@ -219,7 +224,7 @@ const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {
                 className="w-6 h-6 transition"
               />
               <span className="font-medium leading-none transition">
-                {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                {theme === "dark" ? t('common.lightMode') : t('common.darkMode')}
               </span>
             </button>
           </div>

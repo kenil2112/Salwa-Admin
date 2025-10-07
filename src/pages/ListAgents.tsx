@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DashboardLayout from "../layouts/DashboardLayout";
 import type { AgentRow, TabKey } from "../data/agents";
 import { businessAgents, individualAgents } from "../data/agents";
@@ -26,15 +27,15 @@ interface AgentDiscountRecord {
 }
 
 // Calculate real-time stats from API data
-const calculateStats = (data: AgentRow[]) => {
+const calculateStats = (data: AgentRow[], t: any) => {
   const activeCount = data.filter(agent => agent.status === "Active").length;
   const inactiveCount = data.filter(agent => agent.status === "Inactive").length;
   const totalCount = data.length;
 
   return [
-    { value: activeCount.toString(), title: "Active Agents" },
-    { value: inactiveCount.toString(), title: "Inactive Agents" },
-    { value: totalCount.toString(), title: "Total Salwa Agents" },
+    { value: activeCount.toString(), title: t('pages.agents.activeAgents') },
+    { value: inactiveCount.toString(), title: t('pages.agents.inactiveAgents') },
+    { value: totalCount.toString(), title: t('pages.agents.totalAgents') },
   ];
 };
 
@@ -52,6 +53,7 @@ const data: Record<TabKey, AgentRow[]> = {
 const ListAgents = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<TabKey>("individual");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,7 +72,7 @@ const ListAgents = () => {
   const rows = agentsData.length > 0 ? agentsData : data[activeTab];
 
   // Calculate real-time stats from current data
-  const currentStats = calculateStats(rows);
+  const currentStats = calculateStats(rows, t);
 
 
   // Map API data to AgentRow format
