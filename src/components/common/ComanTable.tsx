@@ -77,6 +77,11 @@ function ComanTable<T extends object>({
         onSortChange([{ key: col.sortKey, order: newOrder }]);
     };
 
+    // Helper function to get nested object values
+    const getNestedValue = (obj: any, path: string) => {
+        return path.split('.').reduce((current, key) => current?.[key], obj);
+    };
+
     const getSortOrder = (key?: string) =>
         sortState.find((s) => s.key === key)?.order;
 
@@ -110,11 +115,6 @@ function ComanTable<T extends object>({
             return 0;
         });
     }, [data, sortState]);
-
-    // Helper function to get nested object values
-    const getNestedValue = (obj: any, path: string) => {
-        return path.split('.').reduce((current, key) => current?.[key], obj);
-    };
 
     return (
         <>
