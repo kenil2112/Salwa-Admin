@@ -99,10 +99,13 @@ const ListAgents = () => {
       let response;
 
       if (activeTab === "business") {
-        response = await AgentServices.GetAllAgentDiscountForBusinessList({
+        // Use the new GET API method for business tab
+        response = await AgentServices.GetAllListOfBusinessAgent({
+          searchTerm: search || undefined,
           pageNumber: page,
           pageSize: currentPageSize,
-          searchTerm: search || undefined,
+          orderByColumn: "CreatedDate",
+          orderDirection: "DESC",
         });
       } else {
         response = await AgentServices.GetAllAgentDiscountForIndividualList({
