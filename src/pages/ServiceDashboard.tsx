@@ -328,6 +328,93 @@ const ServiceDashboard = () => {
 
 
 
+    // Check if this is the specific case: categoryId 2, action order
+    if (selectedService?.categoryId == "2" && action === "order") {
+      let targetRoute = '';
+
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/2/service/1/action/order';
+      } else if (selectedServiceIndex == 1) { // serviceIndex 2 (0-based array)
+        targetRoute = '/service-dashboard/category/2/service/2/action/order';
+      }
+
+      if (targetRoute) {
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // Check if this is the specific case: categoryId 3, action order
+    if (selectedService?.categoryId == "3" && action === "order") {
+      let targetRoute = '';
+
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/3/service/1/action/order';
+      }
+
+      if (targetRoute) {
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // Check if this is the specific case: categoryId 4, action order
+    if (selectedService?.categoryId == "4" && action === "order") {
+      let targetRoute = '';
+
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/4/service/1/action/order';
+      }
+
+      if (targetRoute) {
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // Check if this is the specific case: categoryId 5, action order
+    if (selectedService?.categoryId == "5" && action === "order") {
+      let targetRoute = '';
+
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/5/service/1/action/order';
+      }
+
+      if (targetRoute) {
+        // Redirect to the specific service management page
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
     // Check if this is the specific case: categoryId 6, different service indices, action order
     if (selectedService?.categoryId == "6" && action === "order") {
       let targetRoute = '';
@@ -354,26 +441,82 @@ const ServiceDashboard = () => {
       }
     }
 
-    // Check if this is the specific case: categoryId 7, serviceIndex 0, action order
-    if (selectedService?.categoryId == "7" && selectedServiceIndex == 0 && action === "order") {
-      let targetRoute = '/service-dashboard/category/7/service/1/action/order';
+    // Check if this is the specific case: categoryId 7, action order
+    if (selectedService?.categoryId == "7" && action === "order") {
+      let targetRoute = '';
       
-      // Add subservice index if selected
-      if (selectedSubServiceIndex !== null) {
-        targetRoute += `/subservice/${selectedSubServiceIndex + 1}`;
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/7/service/1/action/order';
+        
+        // Add subservice index if selected
+        if (selectedSubServiceIndex !== null) {
+          targetRoute += `/subservice/${selectedSubServiceIndex + 1}`;
+        }
+      } else if (selectedServiceIndex == 1) { // serviceIndex 2 (0-based array)
+        targetRoute = '/service-dashboard/category/7/service/2/action/order';
+      } else if (selectedServiceIndex == 2) { // serviceIndex 3 (0-based array)
+        targetRoute = '/service-dashboard/category/7/service/3/action/order';
       }
       
-      // Redirect to the specific service management page
-      navigate(targetRoute, {
-        state: {
-          category: activeCategory,
-          service: selectedService,
-          subService: selectedSubService,
-          action: action,
-          logData: logData
-        }
-      });
-      return;
+      if (targetRoute) {
+        // Redirect to the specific service management page
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            subService: selectedSubService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // Check if this is the specific case: categoryId 8, action order
+    if (selectedService?.categoryId == "8" && action === "order") {
+      let targetRoute = '';
+      
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/8/service/1/action/order';
+      } else if (selectedServiceIndex == 1) { // serviceIndex 2 (0-based array)
+        targetRoute = '/service-dashboard/category/8/service/2/action/order';
+      }
+      
+      if (targetRoute) {
+        // Redirect to the specific service management page
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // Check if this is the specific case: categoryId 9, action order
+    if (selectedService?.categoryId == "9" && action === "order") {
+      let targetRoute = '';
+      
+      if (selectedServiceIndex == 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/9/service/1/action/order';
+      }
+      
+      if (targetRoute) {
+        // Redirect to the specific service management page
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
     }
 
     // For other cases, navigate to dashboard or handle differently

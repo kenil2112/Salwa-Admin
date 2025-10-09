@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import DashboardLayout from "../layouts/DashboardLayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 import ComanTable, {
   type TableColumn,
   type ActionButton,
   type SortState,
-} from "../components/common/ComanTable";
-import IndividualClinicService from "../services/IndividualClinicService";
-import { useToast } from "../components/ToastProvider";
+} from "../../components/common/ComanTable";
+import IndividualClinicService from "../../services/IndividualClinicService";
+import { useToast } from "../../components/ToastProvider";
 import {
   getStatusBadgeClass,
   getStatusName,
   StatusEnum,
-} from "../utils/statusEnum";
+} from "../../utils/statusEnum";
 
 interface DashboardRecord {
   RequestId: number;
@@ -52,7 +52,7 @@ interface DashboardRecord {
   RowNum: number;
 }
 
-const NewDashboardPage = () => {
+const Service73Dashboard = () => {
   const { subserviceIndex } = useParams<{
     subserviceIndex?: string;
   }>();
@@ -67,8 +67,6 @@ const NewDashboardPage = () => {
   const [sortState, setSortState] = useState<SortState[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
-
-  console.log(records);
 
   // Fetch data from API
   const fetchDataFromAPI = async (): Promise<DashboardRecord[]> => {
@@ -98,14 +96,6 @@ const NewDashboardPage = () => {
 
         setTotalCount(totalCount);
         setTotalPages(calculatedTotalPages);
-
-        console.log("Pagination Debug:", {
-          totalCount,
-          pageSize,
-          apiTotalPages,
-          calculatedTotalPages,
-          currentPage: pageNumber,
-        });
 
         return responseData?.data || [];
       } else {
@@ -155,7 +145,6 @@ const NewDashboardPage = () => {
 
   // Handle publish action
   const handlePublishAction = async (row: DashboardRecord) => {
-    // Show confirmation dialog
     const confirmed = window.confirm(
       `Are you sure you want to publish request ${row.RequestNumber}?\n\nThis action will make the request visible to other users.`
     );
@@ -177,7 +166,6 @@ const NewDashboardPage = () => {
         // Refetch the data to get updated information
         await fetchDataFromAPI();
 
-        // Show success toast notification
         showToast(
           `Request ${row.RequestNumber} has been published successfully!`,
           "success"
@@ -273,48 +261,11 @@ const NewDashboardPage = () => {
       isSort: true,
     },
     {
-      label: "Provide With",
-      value: (row) => <span className="text-gray-500">{row.ProvideWith}</span>,
-      sortKey: "ProvideWith",
-      isSort: true,
-    },
-    {
-      label: "Sterilization Equipment",
-      value: (row) => (
-        <span className="text-gray-500">
-          {row.SterilizationEquipmentFlag ? "Yes" : "No"}
-        </span>
-      ),
-      sortKey: "SterilizationEquipmentFlag",
-      isSort: true,
-    },
-    {
       label: "Validity Time",
       value: (row) => (
         <span className="text-gray-500">{row.ValidityTime} days</span>
       ),
       sortKey: "ValidityTime",
-      isSort: true,
-    },
-    {
-      label: "Other Terms",
-      value: (row) => (
-        <span
-          className="text-gray-500 truncate max-w-xs"
-          title={row.OtherTermsAndCon}
-        >
-          {row.OtherTermsAndCon}
-        </span>
-      ),
-      sortKey: "OtherTermsAndCon",
-      isSort: true,
-    },
-    {
-      label: "Reason",
-      value: (row) => (
-        <span className="text-gray-500">{row.Reason || "N/A"}</span>
-      ),
-      sortKey: "Reason",
       isSort: true,
     },
     {
@@ -345,16 +296,15 @@ const NewDashboardPage = () => {
     },
   ];
 
-  // Action buttons configuration - conditional based on status
+  // Action buttons configuration
   const actionButtons: ActionButton<DashboardRecord>[] = [
     {
       label: "View",
       iconType: "view",
       onClick: (row) => {
-        // Navigate to service details page
-        navigate(`/subservices-details7/${row.RequestId}`);
+        navigate(`/service7-3/${row.RequestId}`);
       },
-      isVisible: () => true, // Always visible
+      isVisible: () => true,
     },
     {
       label: "Publish",
@@ -425,6 +375,9 @@ const NewDashboardPage = () => {
                 </span>
               </button>
             </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Service 7-3 Dashboard
+            </h1>
           </div>
         </header>
 
@@ -501,4 +454,5 @@ const NewDashboardPage = () => {
   );
 };
 
-export default NewDashboardPage;
+export default Service73Dashboard;
+

@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import DashboardLayout from "../layouts/DashboardLayout";
+import DashboardLayout from "../../layouts/DashboardLayout";
 import ComanTable, {
   type TableColumn,
   type ActionButton,
   type SortState,
-} from "../components/common/ComanTable";
-import IndividualClinicService from "../services/IndividualClinicService";
-import { useToast } from "../components/ToastProvider";
+} from "../../components/common/ComanTable";
+import IndividualClinicService from "../../services/IndividualClinicService";
+import { useToast } from "../../components/ToastProvider";
 import {
   getStatusBadgeClass,
   getStatusName,
   StatusEnum,
-} from "../utils/statusEnum";
+} from "../../utils/statusEnum";
 
 interface DashboardRecord {
   RequestId: number;
@@ -52,7 +52,7 @@ interface DashboardRecord {
   RowNum: number;
 }
 
-const NewDashboardPage = () => {
+const Service91Dashboard = () => {
   const { subserviceIndex } = useParams<{
     subserviceIndex?: string;
   }>();
@@ -68,9 +68,6 @@ const NewDashboardPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
-  console.log(records);
-
-  // Fetch data from API
   const fetchDataFromAPI = async (): Promise<DashboardRecord[]> => {
     try {
       const response =
@@ -92,20 +89,11 @@ const NewDashboardPage = () => {
         const totalCount = responseData?.totalCount || 0;
         const apiTotalPages = responseData?.totalPages;
 
-        // Calculate total pages if not provided by API
         const calculatedTotalPages =
           apiTotalPages || Math.ceil(totalCount / pageSize) || 1;
 
         setTotalCount(totalCount);
         setTotalPages(calculatedTotalPages);
-
-        console.log("Pagination Debug:", {
-          totalCount,
-          pageSize,
-          apiTotalPages,
-          calculatedTotalPages,
-          currentPage: pageNumber,
-        });
 
         return responseData?.data || [];
       } else {
@@ -123,7 +111,6 @@ const NewDashboardPage = () => {
         setLoading(true);
         setError(null);
 
-        // Fetch data from API
         const apiData = await fetchDataFromAPI();
         setRecords(apiData);
       } catch (err) {
@@ -137,25 +124,20 @@ const NewDashboardPage = () => {
     fetchData();
   }, [subserviceIndex, pageNumber, pageSize, sortState]);
 
-  // Handle page change
   const handlePageChange = (page: number) => {
     setPageNumber(page);
   };
 
-  // Handle sort change
   const handleSortChange = (newSortState: SortState[]) => {
     setSortState(newSortState);
   };
 
-  // Handle page size change
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
     setPageNumber(1);
   };
 
-  // Handle publish action
   const handlePublishAction = async (row: DashboardRecord) => {
-    // Show confirmation dialog
     const confirmed = window.confirm(
       `Are you sure you want to publish request ${row.RequestNumber}?\n\nThis action will make the request visible to other users.`
     );
@@ -174,10 +156,8 @@ const NewDashboardPage = () => {
       });
 
       if (response && response.success) {
-        // Refetch the data to get updated information
         await fetchDataFromAPI();
 
-        // Show success toast notification
         showToast(
           `Request ${row.RequestNumber} has been published successfully!`,
           "success"
@@ -198,7 +178,6 @@ const NewDashboardPage = () => {
     }
   };
 
-  // Table columns configuration
   const tableColumns: TableColumn<DashboardRecord>[] = [
     {
       label: "Request Number",
@@ -273,48 +252,11 @@ const NewDashboardPage = () => {
       isSort: true,
     },
     {
-      label: "Provide With",
-      value: (row) => <span className="text-gray-500">{row.ProvideWith}</span>,
-      sortKey: "ProvideWith",
-      isSort: true,
-    },
-    {
-      label: "Sterilization Equipment",
-      value: (row) => (
-        <span className="text-gray-500">
-          {row.SterilizationEquipmentFlag ? "Yes" : "No"}
-        </span>
-      ),
-      sortKey: "SterilizationEquipmentFlag",
-      isSort: true,
-    },
-    {
       label: "Validity Time",
       value: (row) => (
         <span className="text-gray-500">{row.ValidityTime} days</span>
       ),
       sortKey: "ValidityTime",
-      isSort: true,
-    },
-    {
-      label: "Other Terms",
-      value: (row) => (
-        <span
-          className="text-gray-500 truncate max-w-xs"
-          title={row.OtherTermsAndCon}
-        >
-          {row.OtherTermsAndCon}
-        </span>
-      ),
-      sortKey: "OtherTermsAndCon",
-      isSort: true,
-    },
-    {
-      label: "Reason",
-      value: (row) => (
-        <span className="text-gray-500">{row.Reason || "N/A"}</span>
-      ),
-      sortKey: "Reason",
       isSort: true,
     },
     {
@@ -345,16 +287,14 @@ const NewDashboardPage = () => {
     },
   ];
 
-  // Action buttons configuration - conditional based on status
   const actionButtons: ActionButton<DashboardRecord>[] = [
     {
       label: "View",
       iconType: "view",
       onClick: (row) => {
-        // Navigate to service details page
-        navigate(`/subservices-details7/${row.RequestId}`);
+        navigate(`/service9-1/${row.RequestId}`);
       },
-      isVisible: () => true, // Always visible
+      isVisible: () => true,
     },
     {
       label: "Publish",
@@ -398,7 +338,6 @@ const NewDashboardPage = () => {
   return (
     <DashboardLayout>
       <div className="p-6">
-        {/* Header */}
         <header className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -425,10 +364,12 @@ const NewDashboardPage = () => {
                 </span>
               </button>
             </div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Service 9-1 Dashboard
+            </h1>
           </div>
         </header>
 
-        {/* Stats Row */}
         <div className="grid gap-4 sm:grid-cols-3 mb-8">
           <div className="rounded-[28px] border border-gray-200 bg-[#f7f8fd] px-6 py-8 text-center shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
             <h3 className="mb-2 text-4xl font-bold text-gray-900">244</h3>
@@ -444,7 +385,6 @@ const NewDashboardPage = () => {
           </div>
         </div>
 
-        {/* Bar Chart Section */}
         <div className="mb-8">
           <div className="rounded-[28px] border border-gray-200 bg-white p-6 shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
             <h3 className="mb-6 text-lg font-semibold text-gray-900">
@@ -479,7 +419,6 @@ const NewDashboardPage = () => {
           </div>
         </div>
 
-        {/* Data Table */}
         <div className="rounded-[28px] border border-gray-200 bg-white shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
           <ComanTable
             columns={tableColumns}
@@ -501,4 +440,5 @@ const NewDashboardPage = () => {
   );
 };
 
-export default NewDashboardPage;
+export default Service91Dashboard;
+
