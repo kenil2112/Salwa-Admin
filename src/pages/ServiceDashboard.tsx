@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect, type ReactNode } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import DashboardLayout from "../layouts/DashboardLayout";
 import type { RentalServicesState } from "./RentalServices";
@@ -43,7 +43,7 @@ interface ApiResponse {
 }
 
 const ServiceDashboard = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [dynamicCategories, setDynamicCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -80,7 +80,7 @@ const ServiceDashboard = () => {
       if (!category) return [];
 
       const response = (await CommonServices.CommonApi({
-        Parameter: `{"ParentId":${category.id}}`,
+        Parameter: `{"ParentId":"${category.id}"}`,
         SPName: "USP_GetAdminCategoryServices",
         Language: "EN",
       })) as ApiResponse;
@@ -117,7 +117,7 @@ const ServiceDashboard = () => {
       if (!service) return [];
 
       const response = (await CommonServices.CommonApi({
-        Parameter: `{"ParentId":${service.id}}`,
+        Parameter: `{"ParentId":"${service.id}"}`,
         SPName: "USP_GetAdminServiceSubServices",
         Language: "EN",
       })) as ApiResponse;
@@ -251,7 +251,7 @@ const ServiceDashboard = () => {
     setSelectedServiceIndex(serviceIndex);
     setModalTitle(service.title);
     setModalSubtitle("Click Next to view sub-services or proceed to orders.");
-    
+
     // Clear any existing subservices data
     setSubServices([]);
     setSelectedSubServiceIndex(null);
@@ -279,19 +279,19 @@ const ServiceDashboard = () => {
 
   const handleServiceNext = async () => {
     if (selectedServiceIndex === null) return;
-    
+
     console.log("Service Next clicked, fetching subservices...");
     setHasClickedServiceNext(true);
     setHasClickedSubServiceNext(false); // Reset subservice flag
-    
+
     // Fetch sub-services for this service
     const subServicesData = await fetchSubServices(selectedServiceIndex);
     console.log("Subservices data:", subServicesData); // Debug log
     setSubServices(subServicesData);
-    
+
     // Close service modal and open subservices modal
     setIsServiceModalOpen(false);
-    
+
     // Check if subservices exist
     if (subServicesData.length > 0) {
       // Open subservices modal
@@ -313,7 +313,7 @@ const ServiceDashboard = () => {
   const handleSubServiceNext = () => {
     console.log("Subservice Next clicked, proceeding to Order/Report...");
     setHasClickedSubServiceNext(true);
-    
+
     // If no subservices available or none selected, proceed with null subservice
     if (subServices.length === 0) {
       setSelectedSubServiceIndex(null);
@@ -345,20 +345,43 @@ const ServiceDashboard = () => {
       hasSubServices: subServices.length > 0,
     };
 
-    console.log("Action Selected:", logData);
 
-    // Close the modal after action selection
-    handleCloseOrderReportModal();
 
-    // Navigate to dashboard (uncomment when ready)
-    // navigate('/dashboard', {
-    //   state: {
-    //     ...logData,
-    //     categoryTitle: activeCategory?.title,
-    //     serviceTitle: selectedService?.serviceTitle,
-    //     subServiceTitle: selectedSubService?.title,
-    //   }
-    // });
+    // Check if this is the specific case: categoryId 6, different service indices, action order
+    if (selectedService?.categoryId == "6" && action === "order") {
+      let targetRoute = '';
+
+      if (selectedServiceIndex === 0) { // serviceIndex 1 (0-based array)
+        targetRoute = '/service-dashboard/category/6/service/1/action/order';
+      } else if (selectedServiceIndex === 1) { // serviceIndex 2 (0-based array)
+        targetRoute = '/service-dashboard/category/6/service/2/action/order';
+      } else if (selectedServiceIndex === 2) { // serviceIndex 3 (0-based array)
+        targetRoute = '/service-dashboard/category/6/service/3/action/order';
+      }
+
+      if (targetRoute) {
+        // Redirect to the specific service management page
+        navigate(targetRoute, {
+          state: {
+            category: activeCategory,
+            service: selectedService,
+            action: action,
+            logData: logData
+          }
+        });
+        return;
+      }
+    }
+
+    // For other cases, navigate to dashboard or handle differently
+    navigate('/dashboard', {
+      state: {
+        ...logData,
+        categoryTitle: activeCategory?.title,
+        serviceTitle: selectedService?.serviceTitle,
+        subServiceTitle: selectedSubService?.title,
+      }
+    });
   };
 
   const handleCloseOrderReportModal = () => {
@@ -576,7 +599,7 @@ const ServiceDashboard = () => {
                 });
                 return null;
               })()}
-              
+
               {!hasClickedServiceNext ? (
                 // Initial service selection view
                 <div className="rounded-2xl border border-gray-100 bg-[#f7f8fd] px-6 py-10 text-center text-sm text-gray-500">
@@ -644,9 +667,9 @@ const ServiceDashboard = () => {
               <ModalFooter
                 onCancel={handleCloseServiceModal}
                 onNext={
-                  !hasClickedServiceNext 
-                    ? handleServiceNext 
-                    : (subServices.length > 0 && !hasClickedSubServiceNext) 
+                  !hasClickedServiceNext
+                    ? handleServiceNext
+                    : (subServices.length > 0 && !hasClickedSubServiceNext)
                       ? () => setHasClickedSubServiceNext(true)
                       : handleSubServiceNext
                 }

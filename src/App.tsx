@@ -22,6 +22,12 @@ import AgentIndividualDetail from "./pages/AgentIndividualDetail";
 import AgentBusinessDetail from "./pages/AgentBusinessDetail";
 import SupervisorDetail from "./pages/SupervisorDetail";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import OrderManagementPage from "./pages/OrderManagementPage";
+import Service2ManagementPage from "./pages/Service2ManagementPage";
+import Service3ManagementPage from "./pages/Service3ManagementPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
+import Service2DetailPage from "./pages/Service2DetailPage";
+import Service3DetailPage from "./pages/Service3DetailPage";
 
 const App = () => {
   return (
@@ -32,6 +38,16 @@ const App = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/service-dashboard" element={<ServiceDashboard />} />
+
+        {/* Specific routes for Category ID 6, different service indices */}
+        <Route path="/service-dashboard/category/6/service/1/action/order" element={<OrderManagementPage />} />
+        <Route path="/service-dashboard/category/6/service/2/action/order" element={<Service2ManagementPage />} />
+        <Route path="/service-dashboard/category/6/service/3/action/order" element={<Service3ManagementPage />} />
+
+        {/* Detail Pages */}
+        <Route path="/order-detail/:orderId" element={<OrderDetailPage />} />
+        <Route path="/service2-detail/:serviceId" element={<Service2DetailPage />} />
+        <Route path="/service3-detail/:projectId" element={<Service3DetailPage />} />
 
         <Route path="/service-dashboard/insurance-services" element={<RentalServices />} />
         <Route path="/service-dashboard/insurance-services/:orderId" element={<RentalServiceDetail />} />
