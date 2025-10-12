@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 
 interface LocationState {
@@ -27,7 +27,7 @@ interface LocationState {
 const Offer61Details = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { offerId } = useParams<{ offerId: string }>();
+  // const { offerId } = useParams<{ offerId: string }>();
   const state = location.state as LocationState;
 
   const [formData, setFormData] = useState({
@@ -42,7 +42,7 @@ const Offer61Details = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(state?.mode === "edit");
+  // const [isEditMode] = useState(state?.mode === "edit");
 
   useEffect(() => {
     if (state?.mode === "view" || state?.mode === "edit") {
@@ -71,11 +71,11 @@ const Offer61Details = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
+
       // Navigate back to dashboard
       navigate("/offer6-1/dashboard", {
         state: {
@@ -101,8 +101,8 @@ const Offer61Details = () => {
           <header className="flex flex-wrap items-start justify-between gap-6">
             <div className="space-y-2">
               <h1 className="text-3xl font-helveticaBold text-primary">
-                {state?.mode === "create" ? "Create New Offer" : 
-                 state?.mode === "edit" ? "Edit Offer" : "Offer Details"}
+                {state?.mode === "create" ? "Create New Offer" :
+                  state?.mode === "edit" ? "Edit Offer" : "Offer Details"}
               </h1>
               <p className="max-w-xl text-sm font-textMedium text-gray-500">
                 {state?.category?.title || "Category 6"} - {state?.service?.title || "Service 1"}

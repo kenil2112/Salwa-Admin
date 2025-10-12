@@ -4,8 +4,6 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import MedicalLegalServices from "../../services/MedicalLegalServices";
 import { useToast } from "../../components/ToastProvider";
 import {
-    getStatusBadgeClass,
-    getStatusName,
     StatusEnum,
 } from "../../utils/statusEnum";
 
@@ -54,7 +52,7 @@ const Service41MedicalLegalDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [images, setImages] = useState<string[]>(sampleImages);
+    const [images] = useState<string[]>(sampleImages);
 
     const fetchServiceDetails = async () => {
         if (!requestNumber) {
@@ -168,48 +166,48 @@ const Service41MedicalLegalDetails = () => {
         }
     };
 
-    const handleAssignLawyer = async () => {
-        if (!serviceDetails) return;
+    // const handleAssignLawyer = async () => {
+    //     if (!serviceDetails) return;
 
-        const lawyerId = prompt("Enter Lawyer ID:");
-        const caseFileNumber = prompt("Enter Case File Number (optional):");
+    //     const lawyerId = prompt("Enter Lawyer ID:");
+    //     const caseFileNumber = prompt("Enter Case File Number (optional):");
 
-        if (!lawyerId) {
-            showToast("Lawyer ID is required", "error");
-            return;
-        }
+    //     if (!lawyerId) {
+    //         showToast("Lawyer ID is required", "error");
+    //         return;
+    //     }
 
-        try {
-            setLoading(true);
+    //     try {
+    //         setLoading(true);
 
-            const response = await MedicalLegalServices.AssignLawyer({
-                serviceId: serviceDetails.id,
-                lawyerId: parseInt(lawyerId),
-                caseFileNumber: caseFileNumber || undefined,
-                notes: "Lawyer assigned by admin",
-            });
+    //         const response = await MedicalLegalServices.AssignLawyer({
+    //             serviceId: serviceDetails.id,
+    //             lawyerId: parseInt(lawyerId),
+    //             caseFileNumber: caseFileNumber || undefined,
+    //             notes: "Lawyer assigned by admin",
+    //         });
 
-            if (response && response.success) {
-                await fetchServiceDetails();
-                showToast(
-                    `Lawyer assigned successfully to request ${serviceDetails.requestNumber}`,
-                    "success"
-                );
-            } else {
-                throw new Error(
-                    (response as any)?.message || "Failed to assign lawyer"
-                );
-            }
-        } catch (error) {
-            console.error("Error assigning lawyer:", error);
-            showToast(
-                `Failed to assign lawyer to request ${serviceDetails.requestNumber}. Please try again.`,
-                "error"
-            );
-        } finally {
-            setLoading(false);
-        }
-    };
+    //         if (response && response.success) {
+    //             await fetchServiceDetails();
+    //             showToast(
+    //                 `Lawyer assigned successfully to request ${serviceDetails.requestNumber}`,
+    //                 "success"
+    //             );
+    //         } else {
+    //             throw new Error(
+    //                 (response as any)?.message || "Failed to assign lawyer"
+    //             );
+    //         }
+    //     } catch (error) {
+    //         console.error("Error assigning lawyer:", error);
+    //         showToast(
+    //             `Failed to assign lawyer to request ${serviceDetails.requestNumber}. Please try again.`,
+    //             "error"
+    //         );
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     if (loading) {
         return (

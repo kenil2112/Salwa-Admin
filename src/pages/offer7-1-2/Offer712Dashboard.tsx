@@ -36,7 +36,7 @@ const Offer712Dashboard = () => {
   const state = location.state as LocationState;
 
   const [offers, setOffers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
 
   useEffect(() => {
     // Initialize offers data for subservice 7.1.2
@@ -101,7 +101,7 @@ const Offer712Dashboard = () => {
             <h2 className="text-lg font-helveticaBold text-primary">
               Active Offers
             </h2>
-            
+
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {[...Array(3)].map((_, index) => (
