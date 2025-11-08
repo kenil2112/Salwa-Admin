@@ -502,7 +502,8 @@ body {
   border-right: 1px solid #8b4513;
 }
 
-.input-filed-block:has(input:disabled) .label-filed{
+.input-filed-block:has(input:disabled) .label-filed,
+.input-filed-block:has(select:disabled) .label-filed{
   @apply bg-[#F4F5F9] cursor-not-allowed
 }
 

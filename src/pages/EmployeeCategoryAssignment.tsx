@@ -688,7 +688,7 @@ const SearchField = ({
   <div className="relative input-filed-block w-full max-w-xs">
     <input
       id="search_employee_category"
-      className="w-full rounded-full border border-slate-200 bg-white pl-5 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
+      className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
           placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
       placeholder="Search here"
       value={value}
@@ -697,10 +697,10 @@ const SearchField = ({
     <label
       htmlFor="search_employee_category"
       className={`
-          label-filed absolute left-4 top-2 text-[#A0A3BD] text-base transition-all duration-200
-          peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base cursor-text
-          peer-focus:-top-3 peer-focus:left-4 peer-focus:text-[13px] peer-focus:text-[#070B68]
-          bg-white px-1  ${value && value.trim() !== "" ? "!-top-3 !left-4 !text-[13px] " : ""} 
+          label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+          peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+          peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+          bg-white px-1  ${value && value.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
           `}
     >
       Search here

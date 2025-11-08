@@ -792,17 +792,17 @@ const SearchField = ({ value, onChange }: { value: string; onChange: (next: stri
       placeholder="Search here"
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="w-full rounded-full border border-slate-200 bg-white pl-5 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
+      className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
           placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
     />
     <label
       htmlFor="search_bar_promocode_settings"
       className={`
-        label-filed absolute left-4 top-2 text-[#A0A3BD] text-base transition-all duration-200
-        peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base cursor-text
-        peer-focus:-top-3 peer-focus:left-4 peer-focus:text-[13px] peer-focus:text-[#070B68]
-        bg-white px-1  ${value && value.trim() !== "" ? "!-top-3 !left-4 !text-[13px] " : ""} 
-        `}
+        label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+        peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+        peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+        bg-white px-1 ${value && value.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
+      `}
     >
       Search here
     </label>
@@ -856,6 +856,7 @@ const FormModal = ({
     <ModalShell
       title={`${mode === "edit" ? "Edit" : "Add"} Promocode (${tabLabel})`}
       onClose={onClose}
+      modalShellClassName="min-w-[710px]"
     >
       {isLoading ? (
         <div className="flex h-48 items-center justify-center text-sm text-gray-500">Loading details...</div>
@@ -869,6 +870,7 @@ const FormModal = ({
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <LabeledSelect
+              id="user_type_id"
               value={values.userTypeId}
               onChange={(event) =>
                 onChange({
@@ -878,27 +880,34 @@ const FormModal = ({
               }
               options={userTypeOptions.map((option) => ({ value: option.id, label: option.label }))}
               disabled={isSubmitting}
+              labelText="User Type"
             />
             <LabeledInput
               placeholder="Promo Description"
+              id="promo_description"
               value={values.promoDescription}
               onChange={(event) => onChange({ ...values, promoDescription: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
               type="date"
+              placeholder="Start Date"
+              id="promo_start_date"
               value={values.startDate}
               onChange={(event) => onChange({ ...values, startDate: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
               type="date"
+              placeholder="End Date"
+              id="promo_end_date"
               value={values.endDate}
               onChange={(event) => onChange({ ...values, endDate: event.target.value })}
               disabled={isSubmitting}
             />
             <LabeledInput
               placeholder="Code"
+              id="promo_code"
               value={values.code}
               onChange={(event) => onChange({ ...values, code: event.target.value })}
               disabled={isSubmitting}
@@ -920,6 +929,7 @@ const FormModal = ({
               </div>
             </div>
             <LabeledInput
+              id="promo_discount_value"
               placeholder={values.discountType === "Flat" ? "Discount Value" : "Discount Percentage"}
               value={values.discountValue}
               onChange={(event) => onChange({ ...values, discountValue: event.target.value })}
@@ -927,6 +937,7 @@ const FormModal = ({
               disabled={isSubmitting}
             />
             <LabeledInput
+              id="promo_maximum_discount"
               placeholder="Maximum Discount Cap Value"
               value={values.maxDiscount}
               onChange={(event) => onChange({ ...values, maxDiscount: event.target.value })}
@@ -934,6 +945,7 @@ const FormModal = ({
               disabled={isSubmitting}
             />
             <LabeledInput
+              id="promo_minimum_discount"
               placeholder="Minimum Purchase Value"
               value={values.minPurchase}
               onChange={(event) => onChange({ ...values, minPurchase: event.target.value })}
@@ -1051,24 +1063,39 @@ const LabelledRadio = ({ label, checked, onChange, disabled }: { label: string; 
   </label>
 );
 
-const LabeledInput = ({ rightAdornment, className = "", ...props }: { rightAdornment?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) => (
+const LabeledInput = ({ rightAdornment, id, placeholder, value, className = "", ...props }: { rightAdornment?: ReactNode } & InputHTMLAttributes<HTMLInputElement>) => (
   <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    <div className="relative">
+    <div className="relative input-filed-block">
       <input
+        id={id}
+        value={value}
         {...props}
-        className={`w-full rounded-md border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
+        className={`w-full px-3 py-2 border rounded-md focus:outline-none text-sm h-[42px] focus:ring-2 focus:ring-blue-500 peer
+                  placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD] ${className}`}
       />
+      <label
+        htmlFor={id}
+        className={`
+          label-filed absolute left-3 top-2 text-[#A0A3BD] text-sm transition-all duration-200
+          peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-sm cursor-text
+          peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+          bg-white px-1 capitalize ${value ? "!-top-3 !left-3 !text-[13px]" : ""} 
+          `}
+      >{placeholder}</label>
       {rightAdornment && <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">{rightAdornment}</span>}
     </div>
   </label>
 );
 
-const LabeledSelect = ({ options, className = "", ...props }: { options: Array<{ value: number | string; label: string }> } & SelectHTMLAttributes<HTMLSelectElement>) => (
+const LabeledSelect = ({ options, value, id, labelText, className = "", ...props }: { labelText?: string; options: Array<{ value: number | string; label: string; }> } & SelectHTMLAttributes<HTMLSelectElement>) => (
   <label className="space-y-2 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
-    <div className="relative">
+    <div className="relative input-filed-block">
       <select
+        value={value}
+        id={id}
         {...props}
-        className={`w-full appearance-none rounded-md border border-gray-200 bg-[#f7f8fd] px-4 py-3 text-sm text-gray-600 shadow-inner focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400 ${className}`}
+        className={`w-full px-3 py-2 h-[42px] border text-gray-600 text-sm rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+            placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD] ${className}`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -1076,9 +1103,15 @@ const LabeledSelect = ({ options, className = "", ...props }: { options: Array<{
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-400">
-        <ChevronDownIcon />
-      </span>
+      <label
+        htmlFor={id}
+        className={`
+        label-filed absolute capitalize left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+        peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+        peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+        bg-white px-1  ${value ? "!-top-3 !left-3 !text-[13px]" : ""} 
+        `}
+      >{labelText}</label>
     </div>
   </label>
 );
@@ -1108,8 +1141,8 @@ const ModalOverlay = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-const ModalShell = ({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) => (
-  <div className="w-full max-w-xl rounded-md bg-white px-6 py-6 shadow-[0_40px_90px_rgba(5,6,104,0.18)]">
+const ModalShell = ({ title, onClose, children, modalShellClassName }: { title: string; onClose: () => void; children: ReactNode, modalShellClassName?: string }) => (
+  <div className={`w-full max-w-xl rounded-md bg-white px-6 py-6 shadow-[0_40px_90px_rgba(5,6,104,0.18)] ${modalShellClassName}`}>
     <div className="flex items-center justify-between gap-4">
       <h3 className="text-xl font-semibold text-primary">{title}</h3>
       <button

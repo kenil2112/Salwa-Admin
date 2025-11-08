@@ -150,7 +150,7 @@ const Reports = () => {
   useEffect(() => {
     if (filters.serviceName) {
       // Find the service ID from the service name
-      const selectedService = services.find(service => 
+      const selectedService = services.find(service =>
         (service.name || service.serviceName) === filters.serviceName
       );
       if (selectedService) {
@@ -210,11 +210,11 @@ const Reports = () => {
       if (response && "data" in response && response.data) {
         // Handle the new response structure
         const responseData = response.data;
-        
+
         // Set the data array
         setReportData(responseData.data || []);
         setTotalCount(responseData.data?.length || 0);
-        
+
         // Set the summary data
         setSummaryData(responseData.summary || null);
       }
@@ -228,7 +228,7 @@ const Reports = () => {
   const handleFilterChange = (key: string, value: string) => {
     setFilters((prev) => {
       const newFilters = { ...prev, [key]: value };
-      
+
       // Clear dependent dropdowns when parent changes
       if (key === "categoryId") {
         newFilters.serviceName = "";
@@ -239,7 +239,7 @@ const Reports = () => {
         newFilters.subServiceName = "";
         setSubServices([]);
       }
-      
+
       return newFilters;
     });
   };
@@ -361,6 +361,7 @@ const Reports = () => {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <Select
               label={t("pages.reports.month")}
+              id="month_reports"
               value={filters.month}
               options={monthOptions.map((m) => ({
                 value: m.value.toString(),
@@ -370,6 +371,7 @@ const Reports = () => {
             />
             <Select
               label={t("pages.reports.year")}
+              id="year_reports"
               value={filters.year}
               options={generateYearOptions().map((year) => ({
                 value: year,
@@ -377,33 +379,36 @@ const Reports = () => {
               }))}
               onChange={(value) => handleFilterChange("year", value)}
             />
-             <Select
-               label={t("pages.reports.category")}
-               value={filters.categoryId}
-               options={categories.map((cat) => ({
-                 value: (cat.Id || cat.id)?.toString() || "",
-                 label: cat.Name || cat.name || `Category ${cat.Id || cat.id}`,
-               }))}
-               onChange={(value) => handleFilterChange("categoryId", value)}
-             />
-             <Select
-               label={t("pages.reports.service")}
-               value={filters.serviceName}
-               options={services.map((service) => ({
-                 value: service.name || service.serviceName || `Service ${service.Id || service.id}`,
-                 label: service.name || service.serviceName || `Service ${service.Id || service.id}`,
-               }))}
-               onChange={(value) => handleFilterChange("serviceName", value)}
-             />
-             <Select
-               label={t("pages.reports.subService")}
-               value={filters.subServiceName}
-               options={subServices.map((sub) => ({
-                 value: sub.name || sub.subServiceName || `Sub-service ${sub.Id || sub.id}`,
-                 label: sub.name || sub.subServiceName || `Sub-service ${sub.Id || sub.id}`,
-               }))}
-               onChange={(value) => handleFilterChange("subServiceName", value)}
-             />
+            <Select
+              label={t("pages.reports.category")}
+              id="category_reports"
+              value={filters.categoryId}
+              options={categories.map((cat) => ({
+                value: (cat.Id || cat.id)?.toString() || "",
+                label: cat.Name || cat.name || `Category ${cat.Id || cat.id}`,
+              }))}
+              onChange={(value) => handleFilterChange("categoryId", value)}
+            />
+            <Select
+              label={t("pages.reports.service")}
+              id="service_reports"
+              value={filters.serviceName}
+              options={services.map((service) => ({
+                value: service.name || service.serviceName || `Service ${service.Id || service.id}`,
+                label: service.name || service.serviceName || `Service ${service.Id || service.id}`,
+              }))}
+              onChange={(value) => handleFilterChange("serviceName", value)}
+            />
+            <Select
+              label={t("pages.reports.subService")}
+              id="subService_reports"
+              value={filters.subServiceName}
+              options={subServices.map((sub) => ({
+                value: sub.name || sub.subServiceName || `Sub-service ${sub.Id || sub.id}`,
+                label: sub.name || sub.subServiceName || `Sub-service ${sub.Id || sub.id}`,
+              }))}
+              onChange={(value) => handleFilterChange("subServiceName", value)}
+            />
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {getSummaryCards(summaryData).map((card) => (
@@ -463,21 +468,22 @@ const Select = ({
   value,
   options,
   onChange,
+  id,
 }: {
   label: string;
   value: string;
+  id: string;
   options: { value: string; label: string }[];
   onChange: (value: string) => void;
 }) => (
   <div className="space-y-1">
-    <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-      {label}
-    </label>
-    <div className="relative">
+    <div className="relative input-filed-block">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        id={id}
+        className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+          placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
       >
         <option value="">All</option>
         {options.map((option) => (
@@ -486,9 +492,15 @@ const Select = ({
           </option>
         ))}
       </select>
-      <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-        <ChevronDownIcon />
-      </span>
+      <label
+        htmlFor={id}
+        className={`
+          label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+          peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+          peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+          bg-white px-1  ${value ? "!-top-3 !left-3 !text-[13px]" : ""} 
+          `}
+      >{label}</label>
     </div>
   </div>
 );

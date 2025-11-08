@@ -418,20 +418,23 @@ const ListSubscribers = () => {
                   placeholder="Search subscribers"
                   value={searchText}
                   onChange={handleSearch}
-                  className="w-full max-w-sm rounded-full border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 peer
+                  className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
           placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
                 />
                 <label
                   htmlFor="search_bar_subscribers"
                   className={`
-                      label-filed absolute left-4 top-4 text-[#A0A3BD] text-sm transition-all duration-200
-                      peer-placeholder-shown:top-[13px] peer-placeholder-shown:text-sm cursor-text
-                      peer-focus:-top-2 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                      bg-white px-1   ${searchText && searchText.trim() !== "" ? "-top-2 !text-[13px] " : ""} 
-                      `}
+                    label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                    peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+                    peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                    bg-white px-1  ${searchText && searchText.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
+                    `}
                 >
                   Search subscribers
                 </label>
+                <span className="pointer-events-none absolute inset-y-0 right-4 grid place-items-center text-gray-400">
+                  <SearchIcon />
+                </span>
               </div>
               <button
                 onClick={handleExport}
@@ -515,5 +518,20 @@ const Header = () => (
     </div>
   </div>
 );
+
+const SearchIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    className="h-4 w-4"
+  >
+    <circle cx="11" cy="11" r="7" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20 20l-3-3" />
+  </svg>
+);
+
 
 export default ListSubscribers;

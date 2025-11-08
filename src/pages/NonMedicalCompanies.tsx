@@ -760,16 +760,16 @@ const NonMedicalCompanies = () => {
                 placeholder="Search"
                 value={searchTerm}
                 onChange={(event) => handleSearchChange(event.target.value)}
-                className="w-full rounded-full border border-slate-200 bg-white pl-5 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
+                className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
           placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               />
               <label
                 htmlFor="search_bar_non_medical_companies"
                 className={`
-                  label-filed absolute left-4 top-2 text-[#A0A3BD] text-base transition-all duration-200
-                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-4 peer-placeholder-shown:text-base cursor-text
-                  peer-focus:-top-3 peer-focus:left-4 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${searchTerm && searchTerm.trim() !== "" ? "!-top-3 !left-4 !text-[13px] " : ""} 
+                  label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1 ${searchTerm && searchTerm.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
                   `}
               >
                 Search

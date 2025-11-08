@@ -103,7 +103,7 @@ const Dashboard = () => {
         subscriptionFilters.month,
         subscriptionFilters.year
       );
-      
+
       if (response && "data" in response && response.data) {
         setSubscriptionData(response.data);
       }
@@ -123,7 +123,7 @@ const Dashboard = () => {
         userFilters.month,
         userFilters.year
       );
-      
+
       if (response && "data" in response && response.data) {
         setUserData(response.data);
       }
@@ -154,7 +154,7 @@ const Dashboard = () => {
         serviceFilters.year,
         serviceFilters.subServiceName
       );
-      
+
       if (response && "data" in response && response.data) {
         setServiceData(response.data);
       }
@@ -218,7 +218,7 @@ const Dashboard = () => {
         insuranceFilters.month,
         insuranceFilters.year
       );
-      
+
       if (response && "data" in response && response.data) {
         setInsuranceData(response.data);
       }
@@ -251,7 +251,7 @@ const Dashboard = () => {
   const handleServiceFilterChange = (key: string, value: string | number | null) => {
     setServiceFilters(prev => {
       const newFilters = { ...prev, [key]: value };
-      
+
       // Handle cascading dropdowns
       if (key === 'categoryId') {
         // Clear service and sub-service when category changes
@@ -259,7 +259,7 @@ const Dashboard = () => {
         newFilters.subServiceName = null;
         setServices([]);
         setSubServices([]);
-        
+
         // Load services for the new category
         if (value) {
           loadServices(value as number);
@@ -268,18 +268,18 @@ const Dashboard = () => {
         // Clear sub-service when service changes
         newFilters.subServiceName = null;
         setSubServices([]);
-        
+
         // Find the service ID for the selected service name
-        const selectedService = services.find(service => 
+        const selectedService = services.find(service =>
           (service.Name || service.name || service.serviceName) === value
         );
-        
+
         // Load sub-services for the new service
         if (selectedService && (selectedService.Id || selectedService.id)) {
           loadSubServices(Number(selectedService.Id || selectedService.id));
         }
       }
-      
+
       return newFilters;
     });
   };
@@ -302,18 +302,18 @@ const Dashboard = () => {
     }
 
     return [
-      { 
-        title: "Number of Subscribers", 
-        value: subscriptionData.numberOfSubscribers?.toString() || "0" 
+      {
+        title: "Number of Subscribers",
+        value: subscriptionData.numberOfSubscribers?.toString() || "0"
       },
-      { 
-        title: "Number of Active Subscribers", 
-        value: subscriptionData.activeSubscribers?.toString() || "0" 
+      {
+        title: "Number of Active Subscribers",
+        value: subscriptionData.activeSubscribers?.toString() || "0"
       },
-      { 
-        title: "Total Subscription Revenue", 
-        value: `${subscriptionData.totalRevenue || 0} SAR`, 
-        icon: <CurrencyIcon /> 
+      {
+        title: "Total Subscription Revenue",
+        value: `${subscriptionData.totalRevenue || 0} SAR`,
+        icon: <CurrencyIcon />
       },
     ];
   };
@@ -329,18 +329,18 @@ const Dashboard = () => {
     }
 
     return [
-      { 
-        title: "Number of Users", 
-        value: userData.numberOfUsers?.toString() || "0" 
+      {
+        title: "Number of Users",
+        value: userData.numberOfUsers?.toString() || "0"
       },
-      { 
-        title: "Number of Active Users", 
-        value: userData.activeUsers?.toString() || "0" 
+      {
+        title: "Number of Active Users",
+        value: userData.activeUsers?.toString() || "0"
       },
-      { 
-        title: "Number of Inactive Users", 
-        value: userData.inactiveUsers?.toString() || "0", 
-        icon: <PendingIcon /> 
+      {
+        title: "Number of Inactive Users",
+        value: userData.inactiveUsers?.toString() || "0",
+        icon: <PendingIcon />
       },
     ];
   };
@@ -359,32 +359,32 @@ const Dashboard = () => {
     }
 
     return [
-      { 
-        title: "Number of Orders", 
-        value: serviceData.numberOfOrders?.toString() || serviceData.totalOrders?.toString() || "0" 
+      {
+        title: "Number of Orders",
+        value: serviceData.numberOfOrders?.toString() || serviceData.totalOrders?.toString() || "0"
       },
-      { 
-        title: "Number of Completed Orders", 
-        value: serviceData.completedOrders?.toString() || serviceData.numberOfCompletedOrders?.toString() || "0" 
+      {
+        title: "Number of Completed Orders",
+        value: serviceData.completedOrders?.toString() || serviceData.numberOfCompletedOrders?.toString() || "0"
       },
-      { 
-        title: "Number of Pending Orders", 
-        value: serviceData.pendingOrders?.toString() || serviceData.numberOfPendingOrders?.toString() || "0" 
+      {
+        title: "Number of Pending Orders",
+        value: serviceData.pendingOrders?.toString() || serviceData.numberOfPendingOrders?.toString() || "0"
       },
-      { 
-        title: "Total Revenue Amount", 
-        value: `${serviceData.totalRevenue || serviceData.revenueAmount || 0} SAR`, 
-        icon: <CurrencyIcon /> 
+      {
+        title: "Total Revenue Amount",
+        value: `${serviceData.totalRevenue || serviceData.revenueAmount || 0} SAR`,
+        icon: <CurrencyIcon />
       },
-      { 
-        title: "Total Commission Amount", 
-        value: `${serviceData.totalCommission || serviceData.commissionAmount || 0} SAR`, 
-        icon: <CurrencyIcon /> 
+      {
+        title: "Total Commission Amount",
+        value: `${serviceData.totalCommission || serviceData.commissionAmount || 0} SAR`,
+        icon: <CurrencyIcon />
       },
-      { 
-        title: "Total Payment Gateway Amount", 
-        value: `${serviceData.totalPaymentGateway || serviceData.paymentGatewayAmount || 0} SAR`, 
-        icon: <CurrencyIcon /> 
+      {
+        title: "Total Payment Gateway Amount",
+        value: `${serviceData.totalPaymentGateway || serviceData.paymentGatewayAmount || 0} SAR`,
+        icon: <CurrencyIcon />
       },
     ];
   };
@@ -403,29 +403,29 @@ const Dashboard = () => {
     }
 
     return [
-      { 
-        title: "Total Appointment Booked", 
-        value: insuranceData.totalAppointmentUser?.toString() || "0" 
+      {
+        title: "Total Appointment Booked",
+        value: insuranceData.totalAppointmentUser?.toString() || "0"
       },
-      { 
-        title: "Total Insurance", 
-        value: insuranceData.uniqAppointmentUser?.toString() || "0" 
+      {
+        title: "Total Insurance",
+        value: insuranceData.uniqAppointmentUser?.toString() || "0"
       },
-      { 
-        title: "Total Successful Bookings", 
-        value: insuranceData.totalSuccessfulBookings?.toString() || insuranceData.successfulBookings?.toString() || "0" 
+      {
+        title: "Total Successful Bookings",
+        value: insuranceData.totalSuccessfulBookings?.toString() || insuranceData.successfulBookings?.toString() || "0"
       },
-      { 
-        title: "Total Cancel Appointment", 
-        value: insuranceData.cancelAppointmentUser?.toString() || "0" 
+      {
+        title: "Total Cancel Appointment",
+        value: insuranceData.cancelAppointmentUser?.toString() || "0"
       },
-      { 
-        title: "Total Insurance Claimed", 
-        value: insuranceData.totalInsuranceClaimed?.toString() || insuranceData.insuranceClaimed?.toString() || "0" 
+      {
+        title: "Total Insurance Claimed",
+        value: insuranceData.totalInsuranceClaimed?.toString() || insuranceData.insuranceClaimed?.toString() || "0"
       },
-      { 
-        title: "Total Unpaid Deductions", 
-        value: insuranceData.sumOfDeductible?.toString() || "0" 
+      {
+        title: "Total Unpaid Deductions",
+        value: insuranceData.sumOfDeductible?.toString() || "0"
       },
     ];
   };
@@ -434,19 +434,19 @@ const Dashboard = () => {
     <DashboardLayout>
       <div className="mx-auto flex w-full  flex-col gap-8 pb-3">
         <AnalysisHero />
-        <SubscriptionStatisticsSection 
+        <SubscriptionStatisticsSection
           filters={subscriptionFilters}
           onFilterChange={handleSubscriptionFilterChange}
           cards={getSubscriptionCards()}
           loading={subscriptionLoading}
         />
-        <UserStatisticsSection 
+        <UserStatisticsSection
           filters={userFilters}
           onFilterChange={handleUserFilterChange}
           cards={getUserCards()}
           loading={userLoading}
         />
-        <ServiceStatisticsSection 
+        <ServiceStatisticsSection
           filters={serviceFilters}
           onFilterChange={handleServiceFilterChange}
           cards={getServiceCards()}
@@ -455,7 +455,7 @@ const Dashboard = () => {
           services={services}
           subServices={subServices}
         />
-        <InsuranceStatisticsSection 
+        <InsuranceStatisticsSection
           filters={insuranceFilters}
           onFilterChange={handleInsuranceFilterChange}
           cards={getInsuranceCards()}
@@ -521,11 +521,11 @@ interface InsuranceStatisticsSectionProps {
   footer?: ReactNode;
 }
 
-const SubscriptionStatisticsSection = ({ 
-  filters, 
-  onFilterChange, 
-  cards, 
-  loading 
+const SubscriptionStatisticsSection = ({
+  filters,
+  onFilterChange,
+  cards,
+  loading
 }: SubscriptionStatisticsSectionProps) => {
   return (
     <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
@@ -538,17 +538,16 @@ const SubscriptionStatisticsSection = ({
           Export
         </button>
       </header>
-      
+
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* User Type Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            User Type
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="user_type_subscription"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.userType}
               onChange={(e) => onFilterChange('userType', parseInt(e.target.value))}
             >
@@ -558,20 +557,25 @@ const SubscriptionStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="user_type_subscription"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >User Type</label>
           </div>
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Month
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="month_subscription"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.month}
               onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
             >
@@ -581,20 +585,25 @@ const SubscriptionStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="month_subscription"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Month</label>
           </div>
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Year
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="year_subscription"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.year}
               onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
             >
@@ -604,9 +613,15 @@ const SubscriptionStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="year_subscription"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Year</label>
           </div>
         </div>
       </div>
@@ -636,11 +651,11 @@ const SubscriptionStatisticsSection = ({
   );
 };
 
-const UserStatisticsSection = ({ 
-  filters, 
-  onFilterChange, 
-  cards, 
-  loading 
+const UserStatisticsSection = ({
+  filters,
+  onFilterChange,
+  cards,
+  loading
 }: UserStatisticsSectionProps) => {
   return (
     <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
@@ -653,17 +668,16 @@ const UserStatisticsSection = ({
           Export
         </button>
       </header>
-      
+
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* User Type Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            User Type
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="user_type_user"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.userType}
               onChange={(e) => onFilterChange('userType', parseInt(e.target.value))}
             >
@@ -673,20 +687,25 @@ const UserStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="user_type_user"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >User Type</label>
           </div>
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Month
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="month_user"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.month}
               onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
             >
@@ -696,20 +715,25 @@ const UserStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="month_user"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Month</label>
           </div>
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Year
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="year_user"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.year}
               onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
             >
@@ -719,9 +743,15 @@ const UserStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="year_user"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Year</label>
           </div>
         </div>
       </div>
@@ -751,10 +781,10 @@ const UserStatisticsSection = ({
   );
 };
 
-const ServiceStatisticsSection = ({ 
-  filters, 
-  onFilterChange, 
-  cards, 
+const ServiceStatisticsSection = ({
+  filters,
+  onFilterChange,
+  cards,
   loading,
   categories,
   services,
@@ -771,17 +801,16 @@ const ServiceStatisticsSection = ({
           Export
         </button>
       </header>
-      
+
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Category Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Category
-          </label>
           <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+            <select
+              id="category_service"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.categoryId || ""}
               onChange={(e) => onFilterChange('categoryId', e.target.value ? parseInt(e.target.value) : null)}
             >
@@ -792,20 +821,25 @@ const ServiceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="category_service"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.categoryId || "" ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Category</label>
           </div>
         </div>
 
         {/* Service Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Service
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="service"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.serviceName || ""}
               onChange={(e) => onFilterChange('serviceName', e.target.value || null)}
               disabled={!filters.categoryId}
@@ -817,20 +851,25 @@ const ServiceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="service"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.serviceName || "" ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Service</label>
           </div>
         </div>
 
         {/* Sub-Service Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Sub Service
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="sub_service"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.subServiceName || ""}
               onChange={(e) => onFilterChange('subServiceName', e.target.value || null)}
               disabled={!filters.serviceName}
@@ -842,20 +881,25 @@ const ServiceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="sub_service"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.subServiceName || "" ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Sub Service</label>
           </div>
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Month
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="month_service"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.month}
               onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
             >
@@ -865,20 +909,25 @@ const ServiceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="month_service"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Month</label>
           </div>
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Year
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="year_service"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.year}
               onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
             >
@@ -888,9 +937,15 @@ const ServiceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="year_service"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Year</label>
           </div>
         </div>
       </div>
@@ -920,10 +975,10 @@ const ServiceStatisticsSection = ({
   );
 };
 
-const InsuranceStatisticsSection = ({ 
-  filters, 
-  onFilterChange, 
-  cards, 
+const InsuranceStatisticsSection = ({
+  filters,
+  onFilterChange,
+  cards,
   loading,
   footer
 }: InsuranceStatisticsSectionProps) => {
@@ -938,17 +993,16 @@ const InsuranceStatisticsSection = ({
           Export
         </button>
       </header>
-      
+
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Month
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="month_insurance"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.month}
               onChange={(e) => onFilterChange('month', parseInt(e.target.value))}
             >
@@ -958,20 +1012,25 @@ const InsuranceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="month_insurance"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Month</label>
           </div>
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-            Year
-          </label>
-          <div className="relative">
-            <select 
-              className="w-full appearance-none rounded-full border border-gray-200 bg-white px-5 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="relative input-filed-block">
+            <select
+              id="year_insurance"
+              className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+                        placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
               value={filters.year}
               onChange={(e) => onFilterChange('year', parseInt(e.target.value))}
             >
@@ -981,9 +1040,15 @@ const InsuranceStatisticsSection = ({
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
-              <ChevronDownIcon />
-            </span>
+            <label
+              htmlFor="year_insurance"
+              className={`
+                  label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+                  peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+                  peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""} 
+                  `}
+            >Year</label>
           </div>
         </div>
       </div>

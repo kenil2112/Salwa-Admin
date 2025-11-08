@@ -6,7 +6,7 @@ import ComanTable, {
   type ActionButton,
   type SortState,
 } from "../../components/common/ComanTable";
-import { 
+import {
   getAllUserWisePointsAndClass,
   getUserWisePointsAndClassGraphOrStatusDetails,
   type UserWisePointsAndClassRecord,
@@ -43,10 +43,10 @@ const Service11Dashboard = () => {
       };
 
       const response = await getAllUserWisePointsAndClass(params);
-      
+
       setTotalCount(response.totalCount);
       setTotalPages(Math.ceil(response.totalCount / pageSize));
-      
+
       return response.records;
     } catch (error) {
       console.error("Error fetching data from API:", error);
@@ -205,11 +205,10 @@ const Service11Dashboard = () => {
     {
       label: "Upgrade Flag",
       value: (row) => (
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
-          row.isUpgradeFlag === 1 
-            ? "bg-green-100 text-green-800" 
-            : "bg-gray-100 text-gray-800"
-        }`}>
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${row.isUpgradeFlag === 1
+          ? "bg-green-100 text-green-800"
+          : "bg-gray-100 text-gray-800"
+          }`}>
           {row.isUpgradeFlag === 1 ? "Yes" : "No"}
         </span>
       ),
@@ -315,7 +314,7 @@ const Service11Dashboard = () => {
               <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
                 Export
               </button>
-             
+
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mt-4">
@@ -344,7 +343,7 @@ const Service11Dashboard = () => {
                     {graphLoading ? (
                       <div className="animate-pulse bg-gray-200 h-10 w-24 rounded"></div>
                     ) : (
-                      graphData?.statusSummary?.[0]?.TotalCity?.toLocaleString() || 
+                      graphData?.statusSummary?.[0]?.TotalCity?.toLocaleString() ||
                       records.reduce((sum, record) => sum + record.points, 0).toLocaleString()
                     )}
                   </h3>
@@ -355,7 +354,7 @@ const Service11Dashboard = () => {
                     {graphLoading ? (
                       <div className="animate-pulse bg-gray-200 h-10 w-16 rounded"></div>
                     ) : (
-                      graphData?.statusSummary?.[0]?.TotalIdNumber?.toLocaleString() || 
+                      graphData?.statusSummary?.[0]?.TotalIdNumber?.toLocaleString() ||
                       new Set(records.map(record => record.category)).size
                     )}
                   </h3>
@@ -363,7 +362,7 @@ const Service11Dashboard = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Chart Section */}
             <div className="bg-white rounded-2xl p-6 shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Overview</h3>
@@ -403,15 +402,15 @@ const Service11Dashboard = () => {
                     {graphData?.monthlyGraph?.map((item, index) => (
                       <span key={index}>{item.Month.substring(0, 3)}</span>
                     )) || (
-                      <>
-                        <span>Jan</span>
-                        <span>Mar</span>
-                        <span>May</span>
-                        <span>Jul</span>
-                        <span>Sep</span>
-                        <span>Nov</span>
-                      </>
-                    )}
+                        <>
+                          <span>Jan</span>
+                          <span>Mar</span>
+                          <span>May</span>
+                          <span>Jul</span>
+                          <span>Sep</span>
+                          <span>Nov</span>
+                        </>
+                      )}
                   </div>
                 </>
               )}
@@ -422,20 +421,31 @@ const Service11Dashboard = () => {
 
         {/* Search Section */}
         <div className="mb-6">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
+          <div className="relative input-filed-block">
             <input
               type="text"
+              id="search_hospitals"
               placeholder="Search hospitals by name, country, or category..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
+              placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
             />
+            <label
+              htmlFor="search_hospitals"
+              className={`
+              label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+              peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+              peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+              bg-white px-1 ${searchText && searchText.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
+            `}
+            >
+              Search hospitals by name, country, or category...
+            </label>
+            <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+              <SearchIcon />
+            </span>
           </div>
         </div>
 
@@ -461,5 +471,12 @@ const Service11Dashboard = () => {
     </DashboardLayout>
   );
 };
+
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+    <circle cx="11" cy="11" r="7" />
+    <path strokeLinecap="round" d="M20 20l-3-3" />
+  </svg>
+);
 
 export default Service11Dashboard;

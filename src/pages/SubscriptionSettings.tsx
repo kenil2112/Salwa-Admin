@@ -126,20 +126,19 @@ const FilterBar = ({
     >
       <Select
         label="Category"
+        id="category"
         value={category}
         options={["All Category", "Insurance", "Doctors", "Food Sector", "Education", "Hospitality"]}
         onChange={(event) => onCategoryChange(event.target.value)}
       />
       <Select
         label="Sub Category"
+        id="sub_category"
         value={subCategory}
         options={["All Subcategory", "Small Facilities", "Medium Facilities", "Large Facilities", "Mega Facilities"]}
         onChange={(event) => onSubCategoryChange(event.target.value)}
       />
       <div className="flex items-center flex-1 min-w-[220px]">
-        <label className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-          Search
-        </label>
         <div className="flex items-center gap-2 w-full relative input-filed-block">
           <input
             type="search"
@@ -147,19 +146,19 @@ const FilterBar = ({
             placeholder="Search plans"
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
-            className="w-full rounded-full border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 peer
+            className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
           placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
           />
           <label
             htmlFor="search_bar_subscription_settings"
             className={`
-          label-filed absolute left-4 top-3 text-[#A0A3BD] text-sm transition-all duration-200
-          peer-placeholder-shown:top-3 peer-placeholder-shown:left-3 peer-placeholder-shown:text-sm cursor-text
-          peer-focus:-top-2.5 peer-focus:left-4 peer-focus:text-[13px] peer-focus:text-[#070B68]
-          bg-white px-1  ${search && search.trim() !== "" ? "-top-2.5 left-4 !text-[13px] " : ""} 
-          `}
+              label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
+              peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
+              peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
+              bg-white px-1 ${search && search.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
+              `}
           >
-            Search plans
+            Search
           </label>
           <button className="shrink-0 rounded-full border border-gray-200 px-5 py-2 text-sm font-semibold text-primary hover:border-primary">
             Search
@@ -228,23 +227,37 @@ const Select = ({
   options,
   value,
   onChange,
+  id,
 }: {
   label: string;
+  id?: string;
   options: string[];
   value: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
 }) => (
   <label className="space-y-1 text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-    {label}
-    <select
-      className="min-w-[220px] rounded-full border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-      value={value}
-      onChange={onChange}
-    >
-      {options.map((option) => (
-        <option key={option}>{option}</option>
-      ))}
-    </select>
+    <div className="relative input-filed-block min-w-[220px]">
+      <select
+        id={id}
+        className="w-full px-3 py-2 h-[42px] text-sm text-gray-600 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
+            placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
+        value={value}
+        onChange={onChange}
+      >
+        {options.map((option) => (
+          <option key={option}>{option}</option>
+        ))}
+      </select>
+      <label
+        htmlFor={id}
+        className={`
+        label-filed absolute capitalize left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
+        peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
+        peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
+        bg-white px-1  ${value ? "!-top-3 !left-3 !text-[13px]" : ""} 
+        `}
+      >{label}</label>
+    </div>
   </label>
 );
 

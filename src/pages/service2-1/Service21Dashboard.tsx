@@ -325,6 +325,9 @@ const Service21Dashboard = () => {
                 >
                   Search requests by title, device name, or contact person...
                 </label>
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-400">
+                  <SearchIcon />
+                </span>
               </div>
               <button
                 onClick={handleSearch}
@@ -391,5 +394,12 @@ const Service21Dashboard = () => {
     </DashboardLayout>
   );
 };
+
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+    <circle cx="11" cy="11" r="7" />
+    <path strokeLinecap="round" d="M20 20l-3-3" />
+  </svg>
+);
 
 export default Service21Dashboard;
