@@ -21,7 +21,6 @@ function InputFiled({ onChange, value, label }: any) {
         onChange={onChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        disabled={true}
       />
     </div>
   );
