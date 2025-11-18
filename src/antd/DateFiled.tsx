@@ -1,7 +1,7 @@
-import { Input } from "antd";
+import { DatePicker } from "antd";
 import { useState } from "react";
 
-function InputFiled({ onChange, value, label, disabled }: any) {
+function DateFiled({ onChange, value, label, disabled }: any) {
   const [focused, setFocused] = useState(false);
   return (
     <div className="relative">
@@ -14,8 +14,8 @@ function InputFiled({ onChange, value, label, disabled }: any) {
       >
         {label}
       </label>
-      <Input
-        className={`py-2 px-4 !text-[17px] h-[62px] w-full border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white ${disabled ? "hover:border-[#e5e7eb]" : "focus:border-primary hover:border-primary"}`}
+      <DatePicker
+        className={`py-2 px-4 !text-[17px] h-[62px] w-full border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white floating-date-filed ${disabled ? "hover:border-[#e5e7eb]" : "focus:border-primary hover:border-primary"}`}
         value={value}
         disabled={disabled}
         onChange={onChange}
@@ -26,4 +26,4 @@ function InputFiled({ onChange, value, label, disabled }: any) {
   );
 }
 
-export default InputFiled;
+export default DateFiled;

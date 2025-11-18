@@ -1,6 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import InputFiled from "../../antd/InputFiled";
+import SelectFiled from "../../antd/SelectFiled";
+import DateFiled from "../../antd/DateFiled";
 
 interface Step1Data {
   facilityName: string;
@@ -83,69 +85,78 @@ const Step1Administrative: React.FC<Step1Props> = ({ data, onChange }) => {
   };
 
   const renderYesNoDropdown = (field: keyof Step1Data, label: string) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
-      <select
-        value={data[field] as string}
-        onChange={(e) => handleInputChange(field, e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">{t("selectOption")}</option>
-        <option value="Yes">{t("yes")}</option>
-        <option value="No">{t("no")}</option>
-      </select>
-    </div>
+    // <div>
+    //   <label className="block text-sm font-medium text-gray-700 mb-1">
+    //     {label}
+    //   </label>
+    //   <select
+    //     value={data[field] as string}
+    //     onChange={(e) => handleInputChange(field, e.target.value)}
+    //     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //   >
+    //     <option value="">{t("selectOption")}</option>
+    //     <option value="Yes">{t("yes")}</option>
+    //     <option value="No">{t("no")}</option>
+    //   </select>
+    // </div>
+    <SelectFiled
+      label={label}
+      value={data[field] as string}
+      onChange={(e) => handleInputChange(field, e.target.value)}
+    />
   );
 
   const renderTextInput = (field: keyof Step1Data, label: string) => (
-    <div>
-      <InputFiled
-        label={label}
-        onChange={(e: any) => handleInputChange(field, e.target.value)}
-      />
-    </div>
+    <InputFiled
+      label={label}
+      value={data[field] as string}
+      onChange={(e: any) => handleInputChange(field, e.target.value)}
+    />
   );
 
   const renderDateInput = (field: keyof Step1Data, label: string) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          type="date"
-          value={data[field] as string}
-          onChange={(e) => handleInputChange(field, e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <svg
-          className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      </div>
-    </div>
+    // <div>
+    //   <label className="block text-sm font-medium text-gray-700 mb-1">
+    //     {label}
+    //   </label>
+    //   <div className="relative">
+    //     <input
+    //       type="date"
+    //       value={data[field] as string}
+    //       onChange={(e) => handleInputChange(field, e.target.value)}
+    //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //     />
+    //     <svg
+    //       className="absolute right-3 top-2.5 h-5 w-5 text-gray-400"
+    //       fill="none"
+    //       stroke="currentColor"
+    //       viewBox="0 0 24 24"
+    //     >
+    //       <path
+    //         strokeLinecap="round"
+    //         strokeLinejoin="round"
+    //         strokeWidth="2"
+    //         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+    //       />
+    //     </svg>
+    //   </div>
+    // </div>
+    <DateFiled
+      label={label}
+      value={data[field] as string}
+      onChange={(e) => handleInputChange(field, e.target.value)}
+    />
   );
 
   const renderImageUpload = (
     field: "facilityPhotosOutside" | "facilityPhotosInside",
     label: string
   ) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+    <div className="p-4">
+      <label className="block text-[17px] font-medium text-gray-500 mb-4">
         {label}
       </label>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-6 gap-2.5">
         {Array.from({ length: 6 }, (_, index) => {
           const file = data[field][index];
           return (
@@ -181,6 +192,7 @@ const Step1Administrative: React.FC<Step1Props> = ({ data, onChange }) => {
                 </div>
               )}
 
+
               <InputFiled
                 label={file ? t("change") : t("upload")}
                 onChange={(e: { target: { files: any } }) => {
@@ -200,220 +212,181 @@ const Step1Administrative: React.FC<Step1Props> = ({ data, onChange }) => {
   );
 
   return (
-    <div className="space-y-8">
-      {/* Basic Facility Information */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("basicFacilityInfo")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderTextInput("facilityName", t("facilityName"))}
-          {renderTextInput("facilityType", t("facilityType"))}
-          {renderTextInput("facilityArea", t("facilityArea"))}
-          {renderYesNoDropdown("hasPrivateRooms", t("hasPrivateRooms"))}
-          {renderTextInput("numberOfPrivateRooms", t("numberOfPrivateRooms"))}
-          {renderYesNoDropdown("hasICURooms", t("hasICURooms"))}
-          {renderTextInput("numberOfICURooms", t("numberOfICURooms"))}
-          {renderTextInput(
-            "numberOfOperatingRooms",
-            t("numberOfOperatingRooms")
-          )}
-          {renderTextInput(
-            "numberOfDaySurgeryRooms",
-            t("numberOfDaySurgeryRooms")
-          )}
-          {renderYesNoDropdown("hasPharmacy", t("hasPharmacy"))}
-          {renderYesNoDropdown("hasPostOpRoom", t("hasPostOpRoom"))}
-          {renderYesNoDropdown("hasER", t("hasER"))}
-        </div>
-        <div className="mt-4">
-          {renderTextInput(
-            "numberOfDialysisMachines",
-            t("numberOfDialysisMachines")
-          )}
-        </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+      {renderTextInput("facilityName", t("Facility Name"))}
+      {renderTextInput("facilityType", t("Facility Type"))}
+      {renderTextInput("facilityArea", t("Facility Area"))}
+      {renderYesNoDropdown("hasPrivateRooms", t("Are There Private Rooms?"))}
+      {renderTextInput("numberOfPrivateRooms", t("Number of Private Rooms"))}
+      {renderYesNoDropdown("hasICURooms", t("Are There vip Rooms?"))}
+      {renderTextInput("numberOfICURooms", t("Number of vip Rooms"))}
+      {renderTextInput(
+        "numberOfOperatingRooms",
+        t("Number of Operating Rooms")
+      )}
+      {renderTextInput(
+        "numberOfDaySurgeryRooms",
+        t("Number of day surgery Rooms")
+      )}
+      {renderYesNoDropdown("hasPharmacy", t("Is There a Pharmacy?"))}
+      {renderYesNoDropdown("hasPostOpRoom", t("hasPostOpRoom"))}
+      {renderYesNoDropdown("hasER", t("hasER"))}
+      <div className="md:col-span-3">
+        {renderTextInput(
+          "numberOfDialysisMachines",
+          t("numberOfDialysisMachines")
+        )}
       </div>
 
       {/* Address and Location */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("addressLocation")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="md:col-span-3 flex gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 w-full gap-4">
           <div className="md:col-span-2">
-            {renderTextInput("facilityAddress", t("facilityAddress"))}
+            {renderTextInput("facilityAddress", t("Facility Address"))}
           </div>
-          {renderTextInput("country", t("country"))}
-          {renderTextInput("region", t("region"))}
-          {renderTextInput("city", t("city"))}
+          {renderTextInput("country", t("Country"))}
+          {renderTextInput("region", t("Region"))}
+          <div className="md:col-span-2">
+            {renderTextInput("city", t("City"))}
+          </div>
         </div>
-        <div className="mt-4 flex items-center space-x-4">
-          <div className="flex-1">
-            <div className="w-full h-32 bg-gray-100 rounded-lg flex items-center justify-center">
-              <div className="text-center">
-                <svg
-                  className="mx-auto h-8 w-8 text-gray-400 mb-2"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <p className="text-sm text-gray-500">{t("mapLocation")}</p>
-              </div>
+        <div className="flex items-center flex-col min-w-[218px] gap-4">
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+            <div className="text-center">
+              <svg
+                className="mx-auto h-8 w-8 text-gray-400 mb-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <p className="text-sm text-gray-500">{t("mapLocation")}</p>
             </div>
           </div>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            {t("setLocation")}
+          <button className="px-4 py-2 bg-black w-full text-white hover:bg-blue-700">
+            {t("Get Direction")}
           </button>
         </div>
       </div>
 
       {/* Additional Facility Details */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("additionalFacilityDetails")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderTextInput(
-            "typeOfFacilityBranches",
-            t("typeOfFacilityBranches")
-          )}
-          {renderYesNoDropdown(
-            "hasEmergencyDepartment",
-            t("hasEmergencyDepartment")
-          )}
-          {renderYesNoDropdown("hasParking", t("hasParking"))}
-          {renderTextInput("numberOfParkingSlots", t("numberOfParkingSlots"))}
-          {renderYesNoDropdown("hasAmbulanceService", t("hasAmbulanceService"))}
-          {renderTextInput("numberOfAmbulanceCars", t("numberOfAmbulanceCars"))}
-        </div>
-      </div>
+      {renderTextInput(
+        "typeOfFacilityBranches",
+        t("Type of Facility Branches")
+      )}
+      {renderYesNoDropdown(
+        "hasEmergencyDepartment",
+        t("Is There an Emergency deparment?")
+      )}
+      {renderYesNoDropdown("hasParking", t("Is There a Parking Lot for Patients?"))}
+      {renderTextInput("numberOfParkingSlots", t("Number of Patient Parking Lots"))}
+      {renderYesNoDropdown("hasAmbulanceService", t("hasAmbulanceService"))}
+      {renderTextInput("numberOfAmbulanceCars", t("numberOfAmbulanceCars"))}
 
       {/* Time and Date Fields */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("timeDateInfo")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderTextInput(
-            "waitingTimeForConsultation",
-            t("waitingTimeForConsultation")
-          )}
-          {renderDateInput("evaluationDate", t("evaluationDate"))}
-          {renderDateInput("expirationDate", t("expirationDate"))}
-          {renderTextInput(
-            "doctorInsuranceBoardNumber",
-            t("doctorInsuranceBoardNumber")
-          )}
-          {renderDateInput("evaluationDate2", t("evaluationDate"))}
-          {renderDateInput("expirationDate2", t("expirationDate"))}
-        </div>
-      </div>
+      {renderTextInput(
+        "waitingTimeForConsultation",
+        t("waitingTimeForConsultation")
+      )}
+      {renderDateInput("evaluationDate", t("Issuance date"))}
+      {renderDateInput("expirationDate", t("Expiration date"))}
+      {renderTextInput(
+        "doctorInsuranceBoardNumber",
+        t("Social insurance board number")
+      )}
+      {renderDateInput("evaluationDate2", t("Issuance date"))}
+      {renderDateInput("expirationDate2", t("Expiration date"))}
 
       {/* Capacity and Space */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("capacitySpace")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderTextInput("numberOfBeds", t("numberOfBeds"))}
-          {renderTextInput("numberOfClinics", t("numberOfClinics"))}
-          {renderTextInput("totalSpaceInSqM", t("totalSpaceInSqM"))}
-        </div>
-      </div>
+      {renderTextInput("numberOfBeds", t("Number of Beds"))}
+      {renderTextInput("numberOfClinics", t("Number of Clinics"))}
+      {renderTextInput("totalSpaceInSqM", t("totalSpaceInSqM"))}
 
       {/* Department and Service Availability */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("departmentServiceAvailability")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderYesNoDropdown("privateWaitingArea", t("privateWaitingArea"))}
-          {renderYesNoDropdown(
-            "infectionControlOfficer",
-            t("infectionControlOfficer")
-          )}
-          {renderYesNoDropdown(
-            "medicalWasteDepartment",
-            t("medicalWasteDepartment")
-          )}
-          {renderYesNoDropdown(
-            "sterilizationDepartment",
-            t("sterilizationDepartment")
-          )}
-          {renderYesNoDropdown("pharmacyDepartment", t("pharmacyDepartment"))}
-          {renderYesNoDropdown(
-            "medicalRecordsDepartment",
-            t("medicalRecordsDepartment")
-          )}
-          {renderYesNoDropdown("labDepartment", t("labDepartment"))}
-          {renderYesNoDropdown("bloodBank", t("bloodBank"))}
-          {renderYesNoDropdown(
-            "ambulanceMedicalTransport",
-            t("ambulanceMedicalTransport")
-          )}
-          {renderYesNoDropdown("radiologyDepartment", t("radiologyDepartment"))}
-          {renderYesNoDropdown(
-            "physiotherapyDepartment",
-            t("physiotherapyDepartment")
-          )}
-          {renderYesNoDropdown("dentalDepartment", t("dentalDepartment"))}
-          {renderYesNoDropdown(
-            "psychiatryDepartment",
-            t("psychiatryDepartment")
-          )}
-          {renderYesNoDropdown(
-            "nutritionDieteticsDepartment",
-            t("nutritionDieteticsDepartment")
-          )}
-          {renderYesNoDropdown("medicalEducation", t("medicalEducation"))}
-          {renderYesNoDropdown(
-            "publicRelationsDepartment",
-            t("publicRelationsDepartment")
-          )}
-          {renderYesNoDropdown("dermatologySkinCare", t("dermatologySkinCare"))}
-          {renderYesNoDropdown("internalMedicine", t("internalMedicine"))}
-          {renderYesNoDropdown(
-            "cardiologyDepartment",
-            t("cardiologyDepartment")
-          )}
-          {renderYesNoDropdown("pediatricsChildCare", t("pediatricsChildCare"))}
-          {renderYesNoDropdown(
-            "medicalBoardDepartment",
-            t("medicalBoardDepartment")
-          )}
-          {renderYesNoDropdown("medicalStaff", t("medicalStaff"))}
-          {renderYesNoDropdown("educationalStaff", t("educationalStaff"))}
-          {renderYesNoDropdown("nurseTraining", t("nurseTraining"))}
-        </div>
-        <div className="mt-4">
-          {renderYesNoDropdown(
-            "employeeAccommodation",
-            t("employeeAccommodation")
-          )}
-        </div>
+      {renderYesNoDropdown("privateWaitingArea", t("privateWaitingArea"))}
+      {renderYesNoDropdown(
+        "infectionControlOfficer",
+        t("infectionControlOfficer")
+      )}
+      {renderYesNoDropdown(
+        "medicalWasteDepartment",
+        t("medicalWasteDepartment")
+      )}
+      {renderYesNoDropdown(
+        "sterilizationDepartment",
+        t("sterilizationDepartment")
+      )}
+      {renderYesNoDropdown("pharmacyDepartment", t("pharmacyDepartment"))}
+      {renderYesNoDropdown(
+        "medicalRecordsDepartment",
+        t("medicalRecordsDepartment")
+      )}
+      {renderYesNoDropdown("labDepartment", t("labDepartment"))}
+      {renderYesNoDropdown("bloodBank", t("bloodBank"))}
+      {renderYesNoDropdown(
+        "ambulanceMedicalTransport",
+        t("ambulanceMedicalTransport")
+      )}
+      {renderYesNoDropdown("radiologyDepartment", t("radiologyDepartment"))}
+      {renderYesNoDropdown(
+        "physiotherapyDepartment",
+        t("physiotherapyDepartment")
+      )}
+      {renderYesNoDropdown("dentalDepartment", t("dentalDepartment"))}
+      {renderYesNoDropdown(
+        "psychiatryDepartment",
+        t("psychiatryDepartment")
+      )}
+      {renderYesNoDropdown(
+        "nutritionDieteticsDepartment",
+        t("nutritionDieteticsDepartment")
+      )}
+      {renderYesNoDropdown("medicalEducation", t("medicalEducation"))}
+      {renderYesNoDropdown(
+        "publicRelationsDepartment",
+        t("publicRelationsDepartment")
+      )}
+      {renderYesNoDropdown("dermatologySkinCare", t("dermatologySkinCare"))}
+      {renderYesNoDropdown("internalMedicine", t("internalMedicine"))}
+      {renderYesNoDropdown(
+        "cardiologyDepartment",
+        t("cardiologyDepartment")
+      )}
+      {renderYesNoDropdown("pediatricsChildCare", t("pediatricsChildCare"))}
+      {renderYesNoDropdown(
+        "medicalBoardDepartment",
+        t("medicalBoardDepartment")
+      )}
+      {renderYesNoDropdown("medicalStaff", t("Medical Library"))}
+      {renderYesNoDropdown("educationalStaff", t("Educational Halls"))}
+      {renderYesNoDropdown("nurseTraining", t("Basic Training Centers"))}
+      <div className="md:col-span-3">
+        {renderYesNoDropdown(
+          "employeeAccommodation",
+          t("Employee Accommodation")
+        )}
       </div>
 
       {/* Image Upload Sections */}
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        {renderImageUpload("facilityPhotosOutside", t("facilityPhotosOutside"))}
+      <div className="border border-[#e5e7eb] rounded-[16px] md:col-span-3">
+        {renderImageUpload("facilityPhotosInside", t("A Picture of the Facility from the Inside"))}
+      </div>
+      <div className="border border-[#e5e7eb] rounded-[16px] md:col-span-3">
+        {renderImageUpload("facilityPhotosOutside", t("A Picture of the Facility from the Outside"))}
       </div>
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        {renderImageUpload("facilityPhotosInside", t("facilityPhotosInside"))}
-      </div>
     </div>
   );
 };

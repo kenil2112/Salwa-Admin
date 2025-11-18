@@ -12,6 +12,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../components/ToastProvider";
+import { Input } from "antd";
 const VERIFY_ID_ENDPOINT =
   "https://apisalwa.rushkarprojects.in/api/SuperAdmin/VerifySuperAdminByIDNumber";
 const VERIFY_MOBILE_ENDPOINT =
@@ -200,7 +201,7 @@ const Login = () => {
     ) {
       throw new Error(
         (payload as BasicApiResponse).message ||
-          "Unable to verify mobile number."
+        "Unable to verify mobile number."
       );
     }
 
@@ -560,53 +561,55 @@ const Login = () => {
       <div className="flex flex-col md:flex-row w-full h-auto md:h-screen">
         <ArtworkPanel />
         <div className="w-full md:flex-1 flex flex-col justify-center items-center px-4 md:px-6 py-12 md:py-0">
-          <div className="w-full max-w-md space-y-12">
-            <header className="space-y-4 text-left">
-              <h1 className="text-4xl font-semibold text-[#070B68]">Login</h1>
-              <p className="text-lg text-gray-500">
+          <div className="w-full max-w-md space-y-12 text-center">
+            <header className="mb-10 md:mb-24">
+              <h1 className="text-3xl md:text-[40px] font-textBold text-primary mb-6 md:mb-9">Login</h1>
+              <p className="text-gray-500 font-helveticaMedium text-lg md:text-[24px] leading-[28px] text-center px-4 md:px-0">
                 {step === "verifyId"
                   ? "Access your account to get started today."
                   : step === "mobile"
-                  ? "Verify your registered mobile number."
-                  : step === "otp"
-                  ? "Enter the OTP sent to your mobile."
-                  : step === "setPassword"
-                  ? "Create your password to finish setup."
-                  : step === "success"
-                  ? "Your password has been set successfully."
-                  : "Sign in with your ID number and password."}
+                    ? "Verify your registered mobile number."
+                    : step === "otp"
+                      ? "Enter the OTP sent to your mobile."
+                      : step === "setPassword"
+                        ? "Create your password to finish setup."
+                        : step === "success"
+                          ? "Your password has been set successfully."
+                          : "Sign in with your ID number and password."}
               </p>
             </header>
 
             {step === "verifyId" && (
-              <form onSubmit={handleVerifySubmit} className="space-y-6">
-                <InputField
-                  id="idNumber"
-                  label="ID Number / IQAMA Number"
-                  value={idNumber}
-                  onChange={(event: any) => setIdNumber(event.target.value)}
-                  placeholder="ID number / IQAMA number"
-                  inputClassName="placeholder:text-[#A0A3BD]"
-                  autoFocus
-                />
-                <button
-                  type="submit"
-                  disabled={verifyLoading}
-                  className="w-full rounded-[18px] bg-[#070B68] py-4 text-lg font-semibold text-white shadow-[0_20px_40px_rgba(7,11,104,0.25)] transition hover:bg-[#030447] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#070B68]/60 disabled:cursor-not-allowed disabled:bg-[#070B68]/70"
-                >
-                  {verifyLoading ? "Verifying..." : "Continue"}
-                </button>
-                <p className="text-center text-sm text-gray-500">
-                  Already verified?
+              <div className="relative md:w-96 mx-auto">
+                <form onSubmit={handleVerifySubmit} className="space-y-8">
+                  <InputField
+                    id="idNumber"
+                    label="ID Number / IQAMA Number"
+                    value={idNumber}
+                    onChange={(event: any) => setIdNumber(event.target.value)}
+                    placeholder="ID number / IQAMA number"
+                    inputClassName="placeholder:text-[#A0A3BD]"
+                    autoFocus
+                  />
                   <button
-                    type="button"
-                    className="ml-2 font-semibold text-primary hover:underline"
-                    onClick={() => goToStep("login")}
+                    type="submit"
+                    disabled={verifyLoading}
+                    className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primaryBlue focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primaryBlue text-white hover:bg-[#1d1791] font-helveticaBold px-4 py-2 text-base w-full h-auto md:h-[72px] md:w-96 rounded-[12px]"
                   >
-                    Go to login
+                    {verifyLoading ? "Verifying..." : "Continue"}
                   </button>
-                </p>
-              </form>
+                  {/* <p className="text-[17px] font-helveticaMedium leading[20px] mt-9 text-gray-500">
+                    Already verified?
+                    <button
+                      type="button"
+                      className="ml-2 font-semibold text-primary hover:underline"
+                      onClick={() => goToStep("login")}
+                    >
+                      Go to login
+                    </button>
+                  </p> */}
+                </form>
+              </div>
             )}
 
             {step === "mobile" && (
@@ -845,38 +848,56 @@ const InputField = ({
   inputClassName = "",
   className = "",
   value,
+  disabled,
   ...props
 }: any) => {
-  const hasValue = value && value?.trim() !== "";
+  const [focused, setFocused] = useState(false);
   return (
-    <div
-      className={`block text-left relative input-filed-block ${containerClassName}`}
-    >
-      <input
-        id={id}
-        value={value}
-        placeholder=" "
-        {...props}
-        className={`
-          peer w-full rounded-[18px] border border-[#E4E6EF] bg-white px-6 py-3.5 text-lg text-[#1F1F1F]
-          placeholder-transparent shadow-[0_12px_40px_rgba(7,11,104,0.08)]
-          outline-none transition focus:border-[#070B68] focus:ring-2 focus:ring-[#070B68]/15
-          disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]
-          ${className} ${inputClassName}
-        `}
-      />
+    // <div
+    //   className={`block text-left relative input-filed-block ${containerClassName}`}
+    // >
+    //   <input
+    //     id={id}
+    //     value={value}
+    //     placeholder=" "
+    //     {...props}
+    //     className={`
+    //       peer w-full min-h-[62px] rounded-[16px] border border-[#E4E6EF] bg-white px-6 py-4 text-lg text-[#1F1F1F]
+    //       placeholder-transparent outline-none transition focus:border-[#070B68] 
+    //       disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]
+    //       ${className} ${inputClassName}
+    //     `}
+    //   />
+    //   <label
+    //     htmlFor={id}
+    //     className={`
+    //       label-filed absolute bg-white px-1 left-3 top-4 text-lg transition-all duration-200
+    //       peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-lg cursor-text
+    //       peer-focus:-top-3.5 peer-focus:text-[13px] peer-focus:text-[#070B68] ${hasValue ? "!-top-3.5 !text-[13px] text-primary" : "text-gray-500"} 
+    //       ${hideLabel ? "sr-only" : ""}
+    //     `}
+    //   >
+    //     {label}
+    //   </label>
+    // </div>
+    <div className={`relative ${disabled ? "opacity-50" : ""}`}>
       <label
-        htmlFor={id}
-        className={`
-          label-filed absolute left-6 top-4 text-[#A0A3BD] text-lg transition-all duration-200
-          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-lg cursor-text
-          peer-focus:-top-3.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
-          bg-white px-1 ${hasValue ? "!-top-3.5 !text-[13px] " : ""} 
-          ${hideLabel ? "sr-only" : ""}
-        `}
+        className={`absolute left-4 z-[1] bg-white text-gray-500 pointer-events-none transition-all duration-200 
+          ${focused || value
+            ? "-top-2 text-xs !text-primary px-1"
+            : "top-[18px] text-base !text-[#999]"
+          }`}
       >
         {label}
       </label>
+      <Input
+        className={`py-2 px-4 !text-base h-[62px] w-full border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white ${disabled ? "hover:border-[#e5e7eb]" : "focus:border-primary hover:border-primary"}`}
+        value={value}
+        disabled={disabled}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        {...props}
+      />
     </div>
   );
 };
@@ -917,7 +938,7 @@ const OtpInputGroup = ({
 );
 
 const ArtworkPanel = () => (
-  <div className="w-full md:w-1/2  flex flex-col justify-between p-8 md:p-12 text-white relative">
+  <div className="w-full md:w-1/2 lg:w-1/3 flex flex-col justify-between p-8 md:p-12 text-white relative">
     <div className="mt-12">
       <img
         src="/img/leftPanelImg.svg"
@@ -935,22 +956,22 @@ const ArtworkPanel = () => (
     </div>
 
     <div className="relative z-10">
-      <p className="text-accentGreen text-[16px] md:text-[24px] text-center leading-[20px] md:leading-[28px] font-helveticaMedium">
-        Towards a Comprehensive <br /> Healthcare Future
+      <p className="text-[#4fe5ce] text-[16px] md:text-[24px] text-center leading-[20px] md:leading-[28px] font-helveticaMedium">
+        Towards a Comprehensive Healthcare Future
       </p>
 
-      <div className="flex justify-center space-x-4 items-stretch  my-8">
+      <div className="flex justify-center gap-6 items-stretch my-8">
         <a href="">
           <img src="img/Group 1.svg" alt="App Store" />
         </a>
-        <span className="devider border border-white w-[1px]"></span>
+        <span className="devider border border-white w-px"></span>
         <a href="">
           {" "}
           <img src="img/Group 2.svg" alt="Google Play" />
         </a>
       </div>
 
-      <p className="text-xs text-white text-center font-HelveticaNowTextRegular opacity-50 text-[14px] ">
+      <p className="text-xs text-white text-center font-HelveticaNowTextRegular opacity-50">
         Copyright © 2025 Bridge Health Business Service. All Rights Reserved.
       </p>
     </div>

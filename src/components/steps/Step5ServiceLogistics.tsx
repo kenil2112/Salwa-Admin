@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import InputFiled from "../../antd/InputFiled";
+import SelectFiled from "../../antd/SelectFiled";
 
 interface Step5Data {
   itNetworkTechnicians: string;
@@ -27,20 +28,25 @@ const Step5ServiceLogistics: React.FC<Step5Props> = ({ data, onChange }) => {
   };
 
   const renderDropdown = (field: keyof Step5Data, label: string) => (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}
-      </label>
-      <select
-        value={data[field] as string}
-        onChange={(e) => handleInputChange(field, e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="">{t("steps.step1.selectOption")}</option>
-        <option value="Pcs">{t("steps.step5.pcs")}</option>
-        <option value="No">{t("steps.step5.no")}</option>
-      </select>
-    </div>
+    // <div>
+    //   <label className="block text-sm font-medium text-gray-700 mb-1">
+    //     {label}
+    //   </label>
+    //   <select
+    //     value={data[field] as string}
+    //     onChange={(e) => handleInputChange(field, e.target.value)}
+    //     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    //   >
+    //     <option value="">{t("steps.step1.selectOption")}</option>
+    //     <option value="Pcs">{t("steps.step5.pcs")}</option>
+    //     <option value="No">{t("steps.step5.no")}</option>
+    //   </select>
+    // </div>
+    <SelectFiled
+      label={label}
+      value={data[field] as string}
+      onChange={(e) => handleInputChange(field, e.target.value)}
+    />
   );
 
   const handleFileUpload = (files: FileList | null) => {
@@ -59,103 +65,94 @@ const Step5ServiceLogistics: React.FC<Step5Props> = ({ data, onChange }) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("steps.step5.title")}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {renderDropdown(
-            "itNetworkTechnicians",
-            t("steps.step5.itNetworkTechnicians")
-          )}
-          {renderDropdown(
-            "maintenanceDepartment",
-            t("steps.step5.maintenanceDepartment")
-          )}
-          {renderDropdown("itStaffShop", t("steps.step5.itStaffShop"))}
-        </div>
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4">
+      {renderDropdown(
+        "itNetworkTechnicians",
+        t("IT & Network Technicians")
+      )}
+      {renderDropdown(
+        "maintenanceDepartment",
+        t("Maintenance Department")
+      )}
+      {renderDropdown("itStaffShop", t("Is there Shops?"))}
 
-      <div className="bg-white rounded-lg p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {t("steps.step5.priceList")}
-        </h3>
-        <div className="space-y-4">
+      <div className="md:col-span-3 mt-2.5 flex items-center justify-between gap-2">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            {t("Price List")}
+          </h3>
           <p className="text-gray-600">
-            {t("steps.step5.priceListDescription")}
+            {t("Please download the provided Excel template, fill in the necessary information, and submit it below.")}
           </p>
-
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={handleDownloadExcel}
-              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors"
-            >
-              {t("steps.step5.downloadExcel")}
-            </button>
-          </div>
-
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
-            <div className="text-center">
-              {data.priceListFile ? (
-                <div className="space-y-2">
-                  <svg
-                    className="mx-auto h-12 w-12 text-green-500"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-sm font-medium text-gray-900">
-                    {data.priceListFile.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {(data.priceListFile.size / 1024).toFixed(1)} KB
-                  </p>
-                  <button
-                    onClick={() => handleInputChange("priceListFile", null)}
-                    className="text-sm text-red-600 hover:text-red-800"
-                  >
-                    {t("steps.step5.remove")}
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <p className="text-sm text-gray-600">
-                    {t("steps.step5.uploadFilledExcel")}
-                  </p>
-
-                  <InputFiled
-                    label={t("steps.step5.chooseFile")}
-                    onChange={(e: { target: { files: FileList | null } }) =>
-                      handleFileUpload(e.target.files)
-                    }
+        </div>
+        <button
+          onClick={handleDownloadExcel}
+          className="px-6 py-2 rounded-md font-medium transition-colors bg-primary text-white hover:bg-[#060662]"
+        >
+          {t("Download Excel")}
+        </button>
+      </div>
+      {/* <div className="space-y-4">
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+          <div className="text-center">
+            {data.priceListFile ? (
+              <div className="space-y-2">
+                <svg
+                  className="mx-auto h-12 w-12 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
-                </div>
-              )}
-            </div>
+                </svg>
+                <p className="text-sm font-medium text-gray-900">
+                  {data.priceListFile.name}
+                </p>
+                <p className="text-xs text-gray-500">
+                  {(data.priceListFile.size / 1024).toFixed(1)} KB
+                </p>
+                <button
+                  onClick={() => handleInputChange("priceListFile", null)}
+                  className="text-sm text-red-600 hover:text-red-800"
+                >
+                  {t("steps.step5.remove")}
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <svg
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
+                </svg>
+                <p className="text-sm text-gray-600">
+                  {t("steps.step5.uploadFilledExcel")}
+                </p>
+
+                <InputFiled
+                  label={t("steps.step5.chooseFile")}
+                  onChange={(e: { target: { files: FileList | null } }) =>
+                    handleFileUpload(e.target.files)
+                  }
+                />
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

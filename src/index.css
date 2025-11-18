@@ -743,3 +743,15 @@ body {
     gap: 1rem;
   }
 }
+
+.floating-select-filed .ant-select-selector{
+  @apply border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white !pl-3.5
+}
+
+.floating-select-filed:hover .ant-select-selector{
+  @apply !border-primary
+}
+
+.floating-date-filed input{
+  @apply !text-[17px]
+}
