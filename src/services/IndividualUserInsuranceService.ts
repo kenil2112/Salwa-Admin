@@ -1,6 +1,7 @@
 import { apiRequest } from "./httpClient";
 
-const INDIVIDUAL_USER_INSURANCE_BASE_URL = "https://apisalwa.rushkarprojects.in/api/IndividualUserInsurance";
+const INDIVIDUAL_USER_INSURANCE_BASE_URL =
+  "https://apisalwa.rushkarprojects.in/api/IndividualUserInsurance";
 
 export interface IndividualUserParams {
   searchText?: string;
@@ -97,20 +98,29 @@ const extractList = (
 
 // Transform IndividualUserRecord to SubscriberRecord for table display
 const transformToSubscriberRecord = (record: IndividualUserRecord): any => {
-  const fullName = [record.firstName, record.middleName, record.lastName]
-    .filter(Boolean)
-    .join(" ") || "N/A";
-  
-  const userType = record.userTypeId === 0 ? "Individual" : 
-                   record.userTypeId === 1 ? "Business" : "Government";
-  
-  const subUserType = record.subUserTypeId ? `Type ${record.subUserTypeId}` : "N/A";
-  
-  const status = record.isActive 
-    ? (record.isApproved ? "Active" : "Pending Approval")
+  const fullName =
+    [record.firstName, record.middleName, record.lastName]
+      .filter(Boolean)
+      .join(" ") || "N/A";
+
+  const userType =
+    record.userTypeId === 0
+      ? "Individual"
+      : record.userTypeId === 1
+      ? "Business"
+      : "Government";
+
+  const subUserType = record.subUserTypeId
+    ? `Type ${record.subUserTypeId}`
+    : "N/A";
+
+  const status = record.isActive
+    ? record.isApproved
+      ? "Active"
+      : "Pending Approval"
     : "Inactive";
-  
-  const joinedDate = record.uniqueUserCode 
+
+  const joinedDate = record.uniqueUserCode
     ? new Date().toLocaleDateString() // Use current date as fallback
     : "N/A";
 
@@ -178,7 +188,6 @@ export const getAllIndividualUserDetails = async (
     totalCount: response.totalRecords ?? rawRecords.length,
     pageNumber: pageNumber,
     pageSize: pageSize,
-    raw: response,
   };
 };
 

@@ -61,7 +61,7 @@ const ListSubscribers = () => {
         };
 
         const response = await getAllIndividualUserDetails(params);
-        console.log("Individual API Response:", response);
+
         console.log("Transformed Records:", response.records);
         setSubscribers(response.records);
         setTotalCount(response.totalCount);
@@ -171,8 +171,8 @@ const ListSubscribers = () => {
       },
       {
         label: " User Type",
-        value: () => (
-          <span className="font-helveticaBold text-primary">{activeTab}</span>
+        value: (row) => (
+          <span className="font-helveticaBold text-primary">{row?.userType}</span>
         ),
         sortKey: "id",
         isSort: true,
@@ -180,13 +180,9 @@ const ListSubscribers = () => {
       {
         label: "Sub User Type",
         value: (row: any) => (
-          <div className="flex flex-col">
-            <span className="text-gray-600 text-sm">
-              {row.subUserTypeIdName}
-            </span>
-          </div>
+          <span className="font-helveticaBold text-primary">{row?.subUserTypeIdName}</span>
         ),
-        sortKey: "subUserTypeId",
+        sortKey: "subUserTypeIdName",
         isSort: true,
       },
       {
@@ -194,7 +190,8 @@ const ListSubscribers = () => {
         value: (row: any) => (
           <div className="flex flex-col">
             <span className="text-gray-600 text-sm">
-              {row?.firstName + " " + row?.middleName + " " + row?.lastName}
+              {row?.name
+              }
             </span>
           </div>
         ),
@@ -226,11 +223,11 @@ const ListSubscribers = () => {
         value: (row: any) => (
           <div className="flex flex-col">
             <span className="text-gray-500 text-xs">
-              {row.maximumDeductibleAmount}
+              {row.subscriptionAmount}
             </span>
           </div>
         ),
-        sortKey: "maximumDeductibleAmount",
+        sortKey: "subscriptionAmount",
         isSort: true,
       },
       {
@@ -263,8 +260,8 @@ const ListSubscribers = () => {
           activeTab === "Business"
             ? "Business Info"
             : activeTab === "Government"
-            ? "Ministry/Department"
-            : "Insurance",
+              ? "Ministry/Department"
+              : "Insurance",
         value: (row) => (
           <div className="flex flex-col">
             {activeTab === "Business" ? (
@@ -307,8 +304,8 @@ const ListSubscribers = () => {
           activeTab === "Business"
             ? "businessSector"
             : activeTab === "Government"
-            ? "ministryName"
-            : "insuranceProvider",
+              ? "ministryName"
+              : "insuranceProvider",
         isSort: true,
       },
       {
@@ -316,24 +313,22 @@ const ListSubscribers = () => {
         value: (row) => (
           <div className="flex flex-col space-y-1">
             <span
-              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${
-                row.status === "Active"
-                  ? "bg-green-100 text-green-800"
-                  : row.status === "Inactive"
+              className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${row.status === "Active"
+                ? "bg-green-100 text-green-800"
+                : row.status === "Inactive"
                   ? "bg-red-100 text-red-800"
                   : "bg-yellow-100 text-yellow-800"
-              }`}
+                }`}
             >
               {row.status}
             </span>
             {activeTab === "Individual" &&
               (row as any).isApproved !== undefined && (
                 <span
-                  className={`text-xs ${
-                    (row as any).isApproved
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                  }`}
+                  className={`text-xs ${(row as any).isApproved
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                    }`}
                 >
                   {(row as any).isApproved ? "Approved" : "Pending"}
                 </span>
@@ -341,11 +336,10 @@ const ListSubscribers = () => {
             {activeTab === "Business" &&
               (row as any).isVerified !== undefined && (
                 <span
-                  className={`text-xs ${
-                    (row as any).isVerified
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                  }`}
+                  className={`text-xs ${(row as any).isVerified
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                    }`}
                 >
                   {(row as any).isVerified ? "Verified" : "Unverified"}
                 </span>
@@ -353,11 +347,10 @@ const ListSubscribers = () => {
             {activeTab === "Government" &&
               (row as any).isVerified !== undefined && (
                 <span
-                  className={`text-xs ${
-                    (row as any).isVerified
-                      ? "text-green-600"
-                      : "text-yellow-600"
-                  }`}
+                  className={`text-xs ${(row as any).isVerified
+                    ? "text-green-600"
+                    : "text-yellow-600"
+                    }`}
                 >
                   {(row as any).isVerified ? "Verified" : "Unverified"}
                 </span>
@@ -372,8 +365,8 @@ const ListSubscribers = () => {
           activeTab === "Business"
             ? "Revenue"
             : activeTab === "Government"
-            ? "Salary Grade"
-            : "Stage",
+              ? "Salary Grade"
+              : "Stage",
         value: (row) =>
           activeTab === "Business" ? (
             <span className="text-gray-600 text-sm">
@@ -394,8 +387,8 @@ const ListSubscribers = () => {
           activeTab === "Business"
             ? "subscriptionAmount"
             : activeTab === "Government"
-            ? "salaryGrade"
-            : "currentStage",
+              ? "salaryGrade"
+              : "currentStage",
         isSort: true,
       },
     ],
@@ -475,25 +468,23 @@ const ListSubscribers = () => {
                       <div
                         className="bg-primary rounded-t"
                         style={{
-                          height: `${
-                            (data.active /
-                              Math.max(
-                                ...analytics.monthlyData.map((d) => d.active)
-                              )) *
+                          height: `${(data.active /
+                            Math.max(
+                              ...analytics.monthlyData.map((d) => d.active)
+                            )) *
                             100
-                          }%`,
+                            }%`,
                         }}
                       />
                       <div
                         className="bg-gray-300 rounded-t"
                         style={{
-                          height: `${
-                            (data.inactive /
-                              Math.max(
-                                ...analytics.monthlyData.map((d) => d.inactive)
-                              )) *
+                          height: `${(data.inactive /
+                            Math.max(
+                              ...analytics.monthlyData.map((d) => d.inactive)
+                            )) *
                             100
-                          }%`,
+                            }%`,
                         }}
                       />
                     </div>
@@ -516,11 +507,10 @@ const ListSubscribers = () => {
                   <button
                     key={tab}
                     onClick={() => handleTabChange(tab)}
-                    className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${
-                      activeTab === tab
-                        ? "bg-primary text-white shadow-sm"
-                        : "text-gray-600 hover:text-gray-800"
-                    }`}
+                    className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${activeTab === tab
+                      ? "bg-primary text-white shadow-sm"
+                      : "text-gray-600 hover:text-gray-800"
+                      }`}
                   >
                     {tab}
                   </button>
@@ -544,10 +534,9 @@ const ListSubscribers = () => {
                     label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
                     peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
                     peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                    bg-white px-1  ${
-                      searchText && searchText.trim() !== ""
-                        ? "!-top-3 !text-[13px] "
-                        : ""
+                    bg-white px-1  ${searchText && searchText.trim() !== ""
+                      ? "!-top-3 !text-[13px] "
+                      : ""
                     } 
                     `}
                 >
