@@ -72,6 +72,11 @@ const getMenuItems = (t: any) => [
     href: "/advanced-options",
     icon: "/theme-icons/settings.png",
   },
+  {
+    label: t('sidebar.listOfPromocodesUsed'),
+    href: "/promocode-used",
+    icon: "/theme-icons/settings.png",
+  },
 ];
 
 const Sidebar: FC<SidebarProps> = ({ isOpen, onClose }) => {

@@ -40,8 +40,7 @@ const ListSubscribers = () => {
   const [totalCount, setTotalCount] = useState(1501);
   const [pageSize, setPageSize] = useState(10);
   const [sortState, setSortState] = useState<SortState[]>([]);
-  // console.log("subscribers",subscribers);
-  
+
   const fetchSubscribers = async () => {
     try {
       setLoading(true);
@@ -236,7 +235,7 @@ const ListSubscribers = () => {
         value: (row: any) => (
           <div className="flex flex-col">
             <span className="text-gray-500 text-xs">
-              {row.expiryDate}
+              {row.insurancePolicyExpiryDate}
             </span>
           </div>
         ),
@@ -244,37 +243,11 @@ const ListSubscribers = () => {
         isSort: true,
       },
       {
-        label: "Country",
+        label: "Subscr",
         value: (row) => (
           <div className="flex flex-col">
             <span className="text-gray-700 text-sm">
-              {row.country}
-            </span>
-            <span className="text-gray-500 text-xs">{row.country}</span>
-          </div>
-        ),
-        sortKey: "country",
-        isSort: true,
-      },
-      {
-        label: "Region",
-        value: (row) => (
-          <div className="flex flex-col">
-            <span className="text-gray-700 text-sm">
-              {row.region}
-            </span>
-            <span className="text-gray-500 text-xs">{row.country}</span>
-          </div>
-        ),
-        sortKey: "region",
-        isSort: true,
-      },
-      {
-        label: "City",
-        value: (row) => (
-          <div className="flex flex-col">
-            <span className="text-gray-700 text-sm">
-              {row.city}
+              {row.city}, {row.region}
             </span>
             <span className="text-gray-500 text-xs">{row.country}</span>
           </div>
@@ -283,23 +256,63 @@ const ListSubscribers = () => {
         isSort: true,
       },
       {
-        label: "District",
+        label:
+          activeTab === "Business"
+            ? "Business Info"
+            : activeTab === "Government"
+              ? "Ministry/Department"
+              : "Insurance",
         value: (row) => (
           <div className="flex flex-col">
-            <span className="text-gray-700 text-sm">
-              {row.district}
-            </span>
-            <span className="text-gray-500 text-xs">{row.country}</span>
+            {activeTab === "Business" ? (
+              <>
+                <span className="text-gray-700 text-sm">
+                  {(row as any).businessSector || "N/A"}
+                </span>
+                {(row as any).numberOfEmployees && (
+                  <span className="text-gray-500 text-xs">
+                    {(row as any).numberOfEmployees} employees
+                  </span>
+                )}
+              </>
+            ) : activeTab === "Government" ? (
+              <>
+                <span className="text-gray-700 text-sm">
+                  {(row as any).ministryName || "N/A"}
+                </span>
+                {(row as any).employmentLevel && (
+                  <span className="text-gray-500 text-xs">
+                    {(row as any).employmentLevel}
+                  </span>
+                )}
+              </>
+            ) : (
+              <>
+                <span className="text-gray-700 text-sm">
+                  {row.insuranceProvider || "No Insurance"}
+                </span>
+                {row.policyNumber && (
+                  <span className="text-gray-500 text-xs">
+                    Policy: {row.policyNumber}
+                  </span>
+                )}
+              </>
+            )}
           </div>
         ),
-        sortKey: "district",
+        sortKey:
+          activeTab === "Business"
+            ? "businessSector"
+            : activeTab === "Government"
+              ? "ministryName"
+              : "insuranceProvider",
         isSort: true,
       },
       {
         label: "Status",
         value: (row) => (
           <div className="flex flex-col space-y-1">
-            {/* <span
+            <span
               className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ${row.status === "Active"
                 ? "bg-green-100 text-green-800"
                 : row.status === "Inactive"
@@ -308,19 +321,18 @@ const ListSubscribers = () => {
                 }`}
             >
               {row.status}
-            </span> */}
+            </span>
             {activeTab === "Individual" &&
-              (row as any).isActive !== undefined && (
+              (row as any).isApproved !== undefined && (
                 <span
-                  className={`text-xs ${(row as any).isActive
+                  className={`text-xs ${(row as any).isApproved
                     ? "text-green-600"
                     : "text-yellow-600"
                     }`}
                 >
-                  {(row as any).isActive ? "Approved" : "Pending"}
+                  {(row as any).isApproved ? "Approved" : "Pending"}
                 </span>
               )}
-              
             {activeTab === "Business" &&
               (row as any).isVerified !== undefined && (
                 <span
@@ -348,6 +360,37 @@ const ListSubscribers = () => {
         sortKey: "status",
         isSort: true,
       },
+      {
+        label:
+          activeTab === "Business"
+            ? "Revenue"
+            : activeTab === "Government"
+              ? "Salary Grade"
+              : "Stage",
+        value: (row) =>
+          activeTab === "Business" ? (
+            <span className="text-gray-600 text-sm">
+              {row.subscriptionAmount > 0
+                ? `$${row.subscriptionAmount.toLocaleString()}`
+                : "N/A"}
+            </span>
+          ) : activeTab === "Government" ? (
+            <span className="text-gray-600 text-sm">
+              {(row as any).salaryGrade || "N/A"}
+            </span>
+          ) : (
+            <span className="text-gray-600 text-sm">
+              Stage {(row as any).currentStage || "N/A"}
+            </span>
+          ),
+        sortKey:
+          activeTab === "Business"
+            ? "subscriptionAmount"
+            : activeTab === "Government"
+              ? "salaryGrade"
+              : "currentStage",
+        isSort: true,
+      },
     ],
     [activeTab]
   );
@@ -359,27 +402,27 @@ const ListSubscribers = () => {
         label: "View",
         iconType: "view",
         onClick: (row) => {
-          navigate(`/user-details/${row.idNo}/${activeTab.toLowerCase()}`);
+          navigate(`/user-details/${row.id}/${activeTab.toLowerCase()}`);
         },
       },
-      // {
-      //   label: "Edit",
-      //   iconType: "edit",
-      //   onClick: (row) => {
-      //     console.log("Edit subscriber:", row);
-      //     // Add edit functionality
-      //   },
-      // },
-      // {
-      //   label: "Delete",
-      //   iconType: "delete",
-      //   onClick: (row) => {
-      //     console.log("Delete subscriber:", row);
-      //     // Add delete functionality
-      //   },
-      // },
+      {
+        label: "Edit",
+        iconType: "edit",
+        onClick: (row) => {
+          console.log("Edit subscriber:", row);
+          // Add edit functionality
+        },
+      },
+      {
+        label: "Delete",
+        iconType: "delete",
+        onClick: (row) => {
+          console.log("Delete subscriber:", row);
+          // Add delete functionality
+        },
+      },
     ],
-    [activeTab]
+    []
   );
 
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -395,6 +438,7 @@ const ListSubscribers = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="text-center">
                 <div className="text-4xl font-bold text-green-600 mb-2">
+                  <>{console.log("jsut checking",analytics.totalActive)}</>
                   {analytics.totalActive}
                 </div>
                 <div className="text-sm text-gray-500">Total Active</div>
