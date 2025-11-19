@@ -7,15 +7,17 @@ import ComanTable, {
   type SortState,
 } from "../../components/common/ComanTable";
 import {
-  getAllUserWisePointsAndClass,
   getUserWisePointsAndClassGraphOrStatusDetails,
-  type UserWisePointsAndClassRecord,
   type UserWisePointsAndClassParams,
-  type GraphOrStatusDetailsResponse
+  type GraphOrStatusDetailsResponse,
 } from "../../services/AccountService";
+import {
+  getAllHospitalNetwork,
+  type HospitalNetworkRecord,
+} from "../../services/IndividualUserInsuranceService";
 
 // Use the API record type
-type Category1Service1Record = UserWisePointsAndClassRecord;
+type Category1Service1Record = HospitalNetworkRecord;
 
 const Service11Dashboard = () => {
   const navigate = useNavigate();
@@ -29,25 +31,29 @@ const Service11Dashboard = () => {
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
-  const [graphData, setGraphData] = useState<GraphOrStatusDetailsResponse | null>(null);
+  const [graphData, setGraphData] =
+    useState<GraphOrStatusDetailsResponse | null>(null);
   const [graphLoading, setGraphLoading] = useState(true);
 
-  const fetchDataFromAPI = async (searchTerm?: string): Promise<Category1Service1Record[]> => {
+  const fetchDataFromAPI = async (
+    searchTerm?: string
+  ): Promise<Category1Service1Record[]> => {
     try {
       const params: UserWisePointsAndClassParams = {
         searchText: searchTerm || searchText,
         pageNumber: pageNumber,
         pageSize: pageSize,
         orderByColumn: sortState.length > 0 ? sortState[0].key : "CreatedDate",
-        orderDirection: sortState.length > 0 ? sortState[0].order.toUpperCase() : "DESC",
+        orderDirection:
+          sortState.length > 0 ? sortState[0].order.toUpperCase() : "DESC",
       };
 
-      const response = await getAllUserWisePointsAndClass(params);
+      const response = await getAllHospitalNetwork(params);
 
-      setTotalCount(response.totalCount);
-      setTotalPages(Math.ceil(response.totalCount / pageSize));
+      setTotalCount(response.totalRecords || 0);
+      setTotalPages(Math.ceil((response.totalRecords || 0) / pageSize));
 
-      return response.records;
+      return response?.data || [];
     } catch (error) {
       console.error("Error fetching data from API:", error);
       throw error;
@@ -113,14 +119,15 @@ const Service11Dashboard = () => {
     }
   };
 
+  console.log("Records:", records);
+  console.log("Total Count:", totalCount);
 
   const handleViewDetails = (row: Category1Service1Record) => {
     // Navigate to service details page
     navigate(`/service1-1/${row.id}`, {
-      state: { service: row }
+      state: { service: row },
     });
   };
-
 
   const tableColumns: TableColumn<Category1Service1Record>[] = [
     {
@@ -132,7 +139,7 @@ const Service11Dashboard = () => {
       isSort: true,
     },
     {
-      label: "Business Name",
+      label: "Hospital Name",
       value: (row) => (
         <span className="text-gray-700 font-medium">
           {row.businessName || "N/A"}
@@ -142,42 +149,53 @@ const Service11Dashboard = () => {
       isSort: true,
     },
     {
-      label: "Category",
+      label: "Grades",
       value: (row) => {
         const getCategoryColor = (category: string) => {
           switch (category) {
-            case "VIP": return "bg-purple-100 text-purple-800";
-            case "A": return "bg-green-100 text-green-800";
-            case "B": return "bg-blue-100 text-blue-800";
-            case "Invalid": return "bg-red-100 text-red-800";
-            default: return "bg-gray-100 text-gray-800";
+            case "VIP":
+              return "bg-purple-100 text-purple-800";
+            case "A":
+              return "bg-green-100 text-green-800";
+            case "B":
+              return "bg-blue-100 text-blue-800";
+            case "Invalid":
+              return "bg-red-100 text-red-800";
+            default:
+              return "bg-gray-100 text-gray-800";
           }
         };
         return (
-          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(row.category)}`}>
-            {row.category}
+          <span
+            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${getCategoryColor(
+              row.class ? row.class : "N/A"
+            )}`}
+          >
+            {row.class}
           </span>
         );
       },
-      sortKey: "category",
+      sortKey: "class",
       isSort: true,
     },
     {
-      label: "Points",
+      label: "Email",
+      value: (row) => <span className="text-gray-600">{row.email}</span>,
+      sortKey: "email",
+      isSort: true,
+    },
+    {
+      label: "Phone Number",
       value: (row) => (
-        <span className="text-green-600 font-semibold">
-          {row.points.toLocaleString()}
-        </span>
+        <span className="text-gray-600">{row.facilityOfficialPhoneNumber}</span>
       ),
-      sortKey: "points",
+      sortKey: "facilityOfficialPhoneNumber",
       isSort: true,
     },
     {
       label: "Country",
       value: (row) => (
-        <span className="text-gray-600">
-          {row.country || "N/A"}
-        </span>
+        <span className="text-gray-600">{row.country || "N/A"}</span>
       ),
       sortKey: "country",
       isSort: true,
@@ -185,9 +203,7 @@ const Service11Dashboard = () => {
     {
       label: "Region",
       value: (row) => (
-        <span className="text-gray-600">
-          {row.region || "N/A"}
-        </span>
+        <span className="text-gray-600">{row.region || "N/A"}</span>
       ),
       sortKey: "region",
       isSort: true,
@@ -195,28 +211,12 @@ const Service11Dashboard = () => {
     {
       label: "City",
       value: (row) => (
-        <span className="text-gray-600">
-          {row.city || "N/A"}
-        </span>
+        <span className="text-gray-600">{row.city || "N/A"}</span>
       ),
       sortKey: "city",
       isSort: true,
     },
-    {
-      label: "Upgrade Flag",
-      value: (row) => (
-        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${row.isUpgradeFlag === 1
-          ? "bg-green-100 text-green-800"
-          : "bg-gray-100 text-gray-800"
-          }`}>
-          {row.isUpgradeFlag === 1 ? "Yes" : "No"}
-        </span>
-      ),
-      sortKey: "isUpgradeFlag",
-      isSort: true,
-    },
   ];
-
 
   const handleEditAction = (row: Category1Service1Record) => {
     console.log("Editing business:", row.id);
@@ -242,9 +242,9 @@ const Service11Dashboard = () => {
       isVisible: () => true,
     },
     {
-      label: "Print",
-      iconType: "print",
-      onClick: () => handlePrintAction(),
+      label: "Download",
+      iconType: "download",
+      onClick: (row) => handlePrintAction(row.certificatePath || ""),
       isVisible: () => true,
     },
   ];
@@ -314,7 +314,6 @@ const Service11Dashboard = () => {
               <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors">
                 Export
               </button>
-
             </div>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mt-4">
@@ -333,7 +332,8 @@ const Service11Dashboard = () => {
                     {graphLoading ? (
                       <div className="animate-pulse bg-gray-200 h-10 w-20 rounded"></div>
                     ) : (
-                      graphData?.statusSummary?.[0]?.TotalHospital?.toLocaleString() || totalCount
+                      graphData?.statusSummary?.[0]?.TotalHospital?.toLocaleString() ||
+                      totalCount
                     )}
                   </h3>
                   <p className="text-sm text-gray-600">Total Hospitals</p>
@@ -344,7 +344,9 @@ const Service11Dashboard = () => {
                       <div className="animate-pulse bg-gray-200 h-10 w-24 rounded"></div>
                     ) : (
                       graphData?.statusSummary?.[0]?.TotalCity?.toLocaleString() ||
-                      records.reduce((sum, record) => sum + record.points, 0).toLocaleString()
+                      records
+                        .reduce((sum, record) => sum + record.points, 0)
+                        .toLocaleString()
                     )}
                   </h3>
                   <p className="text-sm text-gray-600">Total Cities</p>
@@ -355,7 +357,7 @@ const Service11Dashboard = () => {
                       <div className="animate-pulse bg-gray-200 h-10 w-16 rounded"></div>
                     ) : (
                       graphData?.statusSummary?.[0]?.TotalIdNumber?.toLocaleString() ||
-                      new Set(records.map(record => record.category)).size
+                      new Set(records.map((record) => record.category)).size
                     )}
                   </h3>
                   <p className="text-sm text-gray-600">Total ID Numbers</p>
@@ -365,7 +367,9 @@ const Service11Dashboard = () => {
 
             {/* Chart Section */}
             <div className="bg-white rounded-2xl p-6 shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Monthly Overview</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Monthly Overview
+              </h3>
               {graphLoading ? (
                 <div className="h-32 flex items-end justify-between gap-1">
                   {[...Array(6)].map((_, index) => (
@@ -380,8 +384,15 @@ const Service11Dashboard = () => {
                 <>
                   <div className="h-32 flex items-end justify-between gap-1">
                     {graphData?.monthlyGraph?.map((item, index) => {
-                      const maxValue = Math.max(...(graphData?.monthlyGraph?.map(d => d.TotalHospital) || [1]));
-                      const height = maxValue > 0 ? (item.TotalHospital / maxValue) * 100 : 0;
+                      const maxValue = Math.max(
+                        ...(graphData?.monthlyGraph?.map(
+                          (d) => d.TotalHospital
+                        ) || [1])
+                      );
+                      const height =
+                        maxValue > 0
+                          ? (item.TotalHospital / maxValue) * 100
+                          : 0;
                       return (
                         <div
                           key={index}
@@ -390,34 +401,36 @@ const Service11Dashboard = () => {
                           title={`${item.Month}: ${item.TotalHospital} hospitals`}
                         />
                       );
-                    }) || [65, 80, 45, 90, 110, 75, 85, 95, 70, 88, 92, 78].map((height, index) => (
-                      <div
-                        key={index}
-                        className="bg-primary rounded-t flex-1"
-                        style={{ height: `${(height / 110) * 100}%` }}
-                      />
-                    ))}
+                    }) ||
+                      [65, 80, 45, 90, 110, 75, 85, 95, 70, 88, 92, 78].map(
+                        (height, index) => (
+                          <div
+                            key={index}
+                            className="bg-primary rounded-t flex-1"
+                            style={{ height: `${(height / 110) * 100}%` }}
+                          />
+                        )
+                      )}
                   </div>
                   <div className="flex justify-between text-xs text-gray-500 mt-2">
                     {graphData?.monthlyGraph?.map((item, index) => (
                       <span key={index}>{item.Month.substring(0, 3)}</span>
                     )) || (
-                        <>
-                          <span>Jan</span>
-                          <span>Mar</span>
-                          <span>May</span>
-                          <span>Jul</span>
-                          <span>Sep</span>
-                          <span>Nov</span>
-                        </>
-                      )}
+                      <>
+                        <span>Jan</span>
+                        <span>Mar</span>
+                        <span>May</span>
+                        <span>Jul</span>
+                        <span>Sep</span>
+                        <span>Nov</span>
+                      </>
+                    )}
                   </div>
                 </>
               )}
             </div>
           </div>
         </div>
-
 
         {/* Search Section */}
         <div className="mb-6">
@@ -428,7 +441,7 @@ const Service11Dashboard = () => {
               placeholder="Search hospitals by name, country, or category..."
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
               className="w-full rounded-md border border-slate-200 bg-white pl-3 pr-11 py-2 text-base text-gray-600 shadow focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 peer
               placeholder-transparent disabled:cursor-not-allowed disabled:bg-[#F4F5F9] disabled:text-[#A0A3BD]"
             />
@@ -438,7 +451,11 @@ const Service11Dashboard = () => {
               label-filed absolute left-2.5 top-2 text-[#A0A3BD] text-base transition-all duration-200
               peer-placeholder-shown:top-2 peer-placeholder-shown:left-2.5 peer-placeholder-shown:text-base cursor-text
               peer-focus:-top-3 peer-focus:left-2.5 peer-focus:text-[13px] peer-focus:text-[#070B68]
-              bg-white px-1 ${searchText && searchText.trim() !== "" ? "!-top-3 !text-[13px] " : ""} 
+              bg-white px-1 ${
+                searchText && searchText.trim() !== ""
+                  ? "!-top-3 !text-[13px] "
+                  : ""
+              } 
             `}
             >
               Search hospitals by name, country, or category...
@@ -448,7 +465,6 @@ const Service11Dashboard = () => {
             </span>
           </div>
         </div>
-
 
         {/* Service Table */}
         <div className="rounded-[28px] border border-gray-200 bg-white shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
@@ -473,7 +489,14 @@ const Service11Dashboard = () => {
 };
 
 const SearchIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.6"
+    className="h-4 w-4"
+  >
     <circle cx="11" cy="11" r="7" />
     <path strokeLinecap="round" d="M20 20l-3-3" />
   </svg>
