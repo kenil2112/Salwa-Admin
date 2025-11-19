@@ -11,6 +11,26 @@ export interface IndividualUserParams {
   orderDirection?: string;
 }
 
+export interface HospitalNetworkRecord {
+  id: number;
+  businessName: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
+  class: string | null;
+  email: string | null;
+  facilityOfficialPhoneNumber: string | null;
+  certificatePath: string | null;
+  category: string;
+  points: number;
+  createdDate: string;
+  updatedDate: string;
+  userId: number;
+  userTypeId: number;
+  isUpgradeFlag: number;
+  totalRecords?: number;
+}
+
 export interface IndividualUserRecord {
   id: number;
   idNumber_IqamaNumber: string;
@@ -217,5 +237,29 @@ export const updateIndividualUserStatusByStatusId = async (id: number, newStatus
       method: "POST",
       body: JSON.stringify(requestBody)
     }
+      );
+};
+
+export const getAllHospitalNetwork = async (
+  params: IndividualUserParams = {}
+) => {
+  const {
+    searchText = "",
+    pageNumber = 1,
+    pageSize = 10,
+    orderByColumn = "Id",
+    orderDirection = "DESC",
+  } = params;
+
+  const query = buildQuery({
+    searchText,
+    pageNumber,
+    pageSize,
+    orderByColumn,
+    orderDirection,
+  });
+  return apiRequest<HospitalNetworkRecord>(
+    `${INDIVIDUAL_USER_INSURANCE_BASE_URL}/GetAllHospitalNetwork${query}`,
+    { method: "GET" }
   );
 };

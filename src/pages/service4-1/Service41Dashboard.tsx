@@ -162,7 +162,7 @@ const Service41Dashboard = () => {
       } else {
         throw new Error(
           (response as any)?.message ||
-            "Failed to publish rental medical equipment"
+          "Failed to publish rental medical equipment"
         );
       }
     } catch (error) {
@@ -265,13 +265,12 @@ const Service41Dashboard = () => {
       label: "Validity",
       value: (row) => (
         <span
-          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-            row.leftDays === "Expire"
+          className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${row.leftDays === "Expire"
               ? "bg-red-100 text-red-800"
               : row.leftDays === "Soon"
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-green-100 text-green-800"
-          }`}
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-green-100 text-green-800"
+            }`}
         >
           {row.leftDays}
         </span>
@@ -462,9 +461,7 @@ const Service41Dashboard = () => {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-gray-200 bg-white shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
-          {renderRentalMedicalEquipmentTable()}
-        </div>
+        {renderRentalMedicalEquipmentTable()}
       </div>
     </DashboardLayout>
   );

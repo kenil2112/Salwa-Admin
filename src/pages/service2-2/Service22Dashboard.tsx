@@ -269,7 +269,7 @@ const Service22Dashboard = () => {
             default: return 'bg-gray-100 text-gray-800';
           }
         };
-        
+
         const getStatusName = (statusId: number) => {
           switch (statusId) {
             case 100: return 'Pending';
@@ -280,7 +280,7 @@ const Service22Dashboard = () => {
             default: return 'Unknown';
           }
         };
-        
+
         return (
           <span
             className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${getStatusBadgeClass(row.statusId)}`}
@@ -430,22 +430,20 @@ const Service22Dashboard = () => {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-gray-200 bg-white shadow-[0_20px_40px_rgba(5,6,104,0.08)]">
-          <ComanTable
-            columns={tableColumns}
-            data={records}
-            actions={actionButtons}
-            page={pageNumber}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            onPageChange={handlePageChange}
-            sortState={sortState}
-            onSortChange={handleSortChange}
-            pageSize={pageSize}
-            onPageSizeChange={handlePageSizeChange}
-            loading={loading}
-          />
-        </div>
+        <ComanTable
+          columns={tableColumns}
+          data={records}
+          actions={actionButtons}
+          page={pageNumber}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={handlePageChange}
+          sortState={sortState}
+          onSortChange={handleSortChange}
+          pageSize={pageSize}
+          onPageSizeChange={handlePageSizeChange}
+          loading={loading}
+        />
       </div>
     </DashboardLayout>
   );

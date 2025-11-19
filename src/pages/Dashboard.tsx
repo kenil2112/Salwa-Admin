@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import DashboardLayout from "../layouts/DashboardLayout";
 import { StatisticsServices } from "../services/StatisticsServices/StatisticsServices";
 import ReportServices from "../services/ReportServices/ReportServices";
+import SelectFiled from "../antd/SelectFiled";
+import PrimaryButton from "../antd/PrimaryButton";
 
 const CurrencyIcon = () => (
   <svg
@@ -412,25 +414,22 @@ const Dashboard = () => {
       },
       {
         title: "Total Revenue Amount",
-        value: `${
-          serviceData.totalRevenue || serviceData.revenueAmount || 0
-        } SAR`,
+        value: `${serviceData.totalRevenue || serviceData.revenueAmount || 0
+          } SAR`,
         icon: <CurrencyIcon />,
       },
       {
         title: "Total Commission Amount",
-        value: `${
-          serviceData.totalCommission || serviceData.commissionAmount || 0
-        } SAR`,
+        value: `${serviceData.totalCommission || serviceData.commissionAmount || 0
+          } SAR`,
         icon: <CurrencyIcon />,
       },
       {
         title: "Total Payment Gateway Amount",
-        value: `${
-          serviceData.totalPaymentGateway ||
+        value: `${serviceData.totalPaymentGateway ||
           serviceData.paymentGatewayAmount ||
           0
-        } SAR`,
+          } SAR`,
         icon: <CurrencyIcon />,
       },
     ];
@@ -585,19 +584,14 @@ const SubscriptionStatisticsSection = ({
         <h2 className="text-2xl font-semibold text-primary">
           Subscription Statistics
         </h2>
-        <button
-          type="button"
-          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
-        >
-          Export
-        </button>
+        <PrimaryButton children="Export" />
       </header>
 
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* User Type Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="user_type_subscription"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -619,19 +613,30 @@ const SubscriptionStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               User Type
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="User Type"
+            value={filters.userType}
+            onChange={(e) =>
+              onFilterChange("userType", parseInt(e.target.value))
+            }
+            option={userTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="month_subscription"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -653,19 +658,30 @@ const SubscriptionStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Month
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Month"
+            value={filters.month}
+            onChange={(e) =>
+              onFilterChange("month", parseInt(e.target.value))
+            }
+            option={monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="year_subscription"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -685,14 +701,23 @@ const SubscriptionStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Year
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Year"
+            value={filters.year}
+            onChange={(e) => onFilterChange("year", parseInt(e.target.value))}
+            option={generateYearOptions().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          />
         </div>
       </div>
 
@@ -733,19 +758,14 @@ const UserStatisticsSection = ({
     <section className="space-y-6 rounded-[32px] border border-gray-200 bg-white p-8 shadow-sm">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-2xl font-semibold text-primary">User Statistics</h2>
-        <button
-          type="button"
-          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
-        >
-          Export
-        </button>
+        <PrimaryButton children="Export" />
       </header>
 
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* User Type Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="user_type_user"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -767,19 +787,30 @@ const UserStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.userType ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               User Type
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="User Type"
+            value={filters.userType}
+            onChange={(e) =>
+              onFilterChange("userType", parseInt(e.target.value))
+            }
+            option={userTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="month_user"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -801,19 +832,30 @@ const UserStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Month
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Month"
+            value={filters.month}
+            onChange={(e) =>
+              onFilterChange("month", parseInt(e.target.value))
+            }
+            option={monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="year_user"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -833,14 +875,23 @@ const UserStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Year
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Year"
+            value={filters.year}
+            onChange={(e) => onFilterChange("year", parseInt(e.target.value))}
+            option={generateYearOptions().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          />
         </div>
       </div>
 
@@ -886,19 +937,14 @@ const ServiceStatisticsSection = ({
         <h2 className="text-2xl font-semibold text-primary">
           Service Statistics
         </h2>
-        <button
-          type="button"
-          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
-        >
-          Export
-        </button>
+        <PrimaryButton children="Export" />
       </header>
 
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {/* Category Dropdown */}
         <div className="space-y-1">
-          <div className="relative">
+          {/* <div className="relative">
             <select
               id="category_service"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -927,21 +973,43 @@ const ServiceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.categoryId || ""
-                      ? "!-top-3 !left-3 !text-[13px]"
-                      : ""
-                  } 
+                  bg-white px-1  ${filters.categoryId || ""
+                  ? "!-top-3 !left-3 !text-[13px]"
+                  : ""
+                } 
                   `}
             >
               Category
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Category"
+            value={filters.categoryId || ""}
+            onChange={(e) =>
+              onFilterChange(
+                "categoryId",
+                e.target.value ? parseInt(e.target.value) : null
+              )
+            }
+            option={
+              <>
+                <option value="">All Categories</option>
+                {categories.map((category) => (
+                  <option
+                    key={category.Id || category.id}
+                    value={category.Id || category.id}
+                  >
+                    {category.EName || category.name}
+                  </option>
+                ))}
+              </>
+            }
+          />
         </div>
 
         {/* Service Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="service"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -968,21 +1036,41 @@ const ServiceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.serviceName || ""
-                      ? "!-top-3 !left-3 !text-[13px]"
-                      : ""
-                  } 
+                  bg-white px-1  ${filters.serviceName || ""
+                  ? "!-top-3 !left-3 !text-[13px]"
+                  : ""
+                } 
                   `}
             >
               Service
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Service"
+            value={filters.serviceName || ""}
+            onChange={(e) =>
+              onFilterChange("serviceName", e.target.value || null)
+            }
+            disabled={!filters.categoryId}
+            option={
+              <>
+                <option value="">All Services</option>
+                {services.map((service) => (
+                  <option
+                    key={service.Id || service.id}
+                    value={service.Name || service.name || service.serviceName}
+                  >
+                    {service.EName || service.name || service.serviceName}
+                  </option>
+                ))}
+              </>
+            }
+          />
         </div>
 
         {/* Sub-Service Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="sub_service"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -1015,21 +1103,47 @@ const ServiceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.subServiceName || ""
-                      ? "!-top-3 !left-3 !text-[13px]"
-                      : ""
-                  } 
+                  bg-white px-1  ${filters.subServiceName || ""
+                  ? "!-top-3 !left-3 !text-[13px]"
+                  : ""
+                } 
                   `}
             >
               Sub Service
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Sub Service"
+            value={filters.subServiceName || ""}
+            onChange={(e) =>
+              onFilterChange("subServiceName", e.target.value || null)
+            }
+            disabled={!filters.serviceName}
+            option={
+              <>
+                <option value="">All Sub-Services</option>
+                {subServices.map((subService) => (
+                  <option
+                    key={subService.Id || subService.id}
+                    value={
+                      subService.Name ||
+                      subService.name ||
+                      subService.subServiceName
+                    }
+                  >
+                    {subService.EName ||
+                      subService.name ||
+                      subService.subServiceName}
+                  </option>
+                ))}
+              </>
+            }
+          />
         </div>
 
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="month_service"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -1051,19 +1165,30 @@ const ServiceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Month
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Month"
+            value={filters.month}
+            onChange={(e) =>
+              onFilterChange("month", parseInt(e.target.value))
+            }
+            option={monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="year_service"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -1083,14 +1208,23 @@ const ServiceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Year
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Year"
+            value={filters.year}
+            onChange={(e) => onFilterChange("year", parseInt(e.target.value))}
+            option={generateYearOptions().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          />
         </div>
       </div>
 
@@ -1134,19 +1268,14 @@ const InsuranceStatisticsSection = ({
         <h2 className="text-2xl font-semibold text-primary">
           Insurance Statistics
         </h2>
-        <button
-          type="button"
-          className="rounded-full border border-gray-200 px-6 py-2 text-sm font-semibold text-primary transition hover:border-primary hover:text-primary"
-        >
-          Export
-        </button>
+        <PrimaryButton children="Export" />
       </header>
 
       {/* Custom Filter Dropdowns */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
         {/* Month Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="month_insurance"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -1168,19 +1297,30 @@ const InsuranceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.month ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Month
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Month"
+            value={filters.month}
+            onChange={(e) =>
+              onFilterChange("month", parseInt(e.target.value))
+            }
+            option={monthOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          />
         </div>
 
         {/* Year Dropdown */}
         <div className="space-y-1">
-          <div className="relative input-filed-block">
+          {/* <div className="relative input-filed-block">
             <select
               id="year_insurance"
               className="w-full px-3 py-2 h-[46px] border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 peer
@@ -1200,14 +1340,23 @@ const InsuranceStatisticsSection = ({
                   label-filed absolute left-3 top-2 text-[#A0A3BD] text-base transition-all duration-200
                   peer-placeholder-shown:top-2 peer-placeholder-shown:left-3 peer-placeholder-shown:text-base cursor-text
                   peer-focus:-top-3 peer-focus:left-3 peer-focus:text-[13px] peer-focus:text-[#070B68]
-                  bg-white px-1  ${
-                    filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
-                  } 
+                  bg-white px-1  ${filters.year ? "!-top-3 !left-3 !text-[13px]" : ""
+                } 
                   `}
             >
               Year
             </label>
-          </div>
+          </div> */}
+          <SelectFiled
+            label="Year"
+            value={filters.year}
+            onChange={(e) => onFilterChange("year", parseInt(e.target.value))}
+            option={generateYearOptions().map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          />
         </div>
       </div>
 

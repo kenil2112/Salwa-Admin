@@ -745,7 +745,7 @@ body {
 }
 
 .floating-select-filed .ant-select-selector{
-  @apply border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white !pl-3.5
+  @apply border border-[#e5e7eb] rounded-[16px] !shadow-none !bg-white !pl-3.5 text-[17px]
 }
 
 .floating-select-filed:hover .ant-select-selector{
