@@ -38,6 +38,11 @@ const getMenuItems = (t: any) => [
     icon: "/theme-icons/invoice.png",
   },
   {
+    label: t('sidebar.businessIdeaPartner'),
+    href: "/business-idea-partner",
+    icon: "/theme-icons/invoice.png",
+  },
+  {
     label: t('sidebar.nonMedicalCompanies'),
     href: "/non-medical-companies",
     icon: "/theme-icons/providers.png",

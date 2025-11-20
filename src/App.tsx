@@ -66,6 +66,7 @@ import { Offer91Dashboard, Offer91Details } from "./pages/offer9-1";
 import { Offer711Dashboard, Offer711Details } from "./pages/offer7-1-1";
 import { Offer712Dashboard, Offer712Details } from "./pages/offer7-1-2";
 import { Offer713Dashboard, Offer713Details } from "./pages/offer7-1-3";
+import BusinessAnalytics from "./pages/BusinessAnalytics";
 
 const App = () => {
   return (
@@ -457,6 +458,7 @@ const App = () => {
         />
         <Route path="/terms-condition-master" element={<TermsConditionsMaster />} />
         <Route path="/promocode-settings" element={<PromocodeSettings />} />
+        <Route path="/business-idea-partner" element={<BusinessAnalytics />} />
         <Route
           path="/non-medical-companies"
           element={<NonMedicalCompanies />}
